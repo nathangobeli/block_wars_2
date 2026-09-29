@@ -111,7 +111,7 @@ export const Playfield: React.FC<PlayfieldProps> = ({
   // Tabletop Duel: Fills the player's half of the phone screen with massive 10x20 grid
   // Arena Split: Side-by-side vertical arcade view
   const defaultHeightClass = isTabletop
-    ? 'h-[clamp(195px,33dvh,295px)] sm:h-[clamp(240px,36dvh,380px)]'
+    ? 'h-[clamp(210px,36dvh,345px)] sm:h-[clamp(250px,38dvh,420px)]'
     : 'h-[clamp(270px,48vh,520px)] sm:h-[clamp(320px,56vh,580px)] max-w-[45vw]';
 
   const boardHeightClass = customHeightClass || defaultHeightClass;
