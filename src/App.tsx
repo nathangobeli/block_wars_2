@@ -208,7 +208,7 @@ export function App() {
 
     return (
       <div
-        className={`flex flex-col justify-between h-[clamp(210px,36dvh,345px)] sm:h-[clamp(250px,38dvh,420px)] py-1 px-1.5 sm:px-2 rounded-xl bg-slate-950/90 border ${borderColor} ${glow} text-[10px] font-mono w-[170px] sm:w-[195px] min-w-[160px] max-w-[205px] shrink-0 select-none backdrop-blur-sm`}
+        className={`flex flex-col justify-between h-[clamp(230px,41dvh,375px)] sm:h-[clamp(260px,43dvh,450px)] py-1.5 px-2 rounded-xl bg-slate-950/90 border ${borderColor} ${glow} text-[10px] font-mono w-[170px] sm:w-[195px] min-w-[160px] max-w-[205px] shrink-0 select-none backdrop-blur-sm`}
       >
         {/* Top: Score & Telemetry Banner */}
         <div className="w-full">
@@ -469,7 +469,7 @@ export function App() {
 
         {/* VIEW MODE 2: TABLETOP DUEL (Head-to-Head Clash for 2 Players on Same Phone) */}
         {viewMode === 'tabletop_duel' && (
-          <div className="flex-1 flex flex-col justify-between items-center w-full h-full max-w-md mx-auto pt-[max(env(safe-area-inset-top,0px),20px)] pb-[max(env(safe-area-inset-bottom,0px),12px)] px-1 sm:px-2 overflow-hidden">
+          <div className="flex-1 flex flex-col justify-between items-center w-full h-full max-w-md mx-auto pt-[max(env(safe-area-inset-top,0px),20px)] pb-[max(env(safe-area-inset-bottom,0px),6px)] px-1 sm:px-2 overflow-hidden">
             {/* --- TOP HALF: PLAYER 2 (Inverted 180° for Opponent) --- */}
             <div className="rotate-180 flex-1 min-h-0 flex items-center justify-center w-full py-0.5">
               <div className="flex items-center justify-center gap-1.5 sm:gap-2.5 h-full max-h-full">
