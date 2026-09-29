@@ -5,6 +5,10 @@
 @layer base {
   :root {
     color-scheme: dark;
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --sar: env(safe-area-inset-right, 0px);
   }
   
   html, body, #root {
@@ -17,7 +21,7 @@
   }
 
   body {
-    background-color: #090A0F;
+    background-color: #08090E;
     color: #e2e8f0;
     user-select: none;
     -webkit-user-select: none;

@@ -208,7 +208,7 @@ export function App() {
 
     return (
       <div
-        className={`flex flex-col justify-between h-[clamp(225px,37dvh,355px)] sm:h-[clamp(260px,38dvh,420px)] py-1.5 px-2 rounded-lg bg-slate-950/90 border ${borderColor} ${glow} text-[10px] font-mono w-[105px] sm:w-[125px] shrink-0 select-none backdrop-blur-sm`}
+        className={`flex flex-col justify-between h-[clamp(195px,33dvh,295px)] sm:h-[clamp(240px,36dvh,380px)] py-1.5 px-2 rounded-lg bg-slate-950/90 border ${borderColor} ${glow} text-[10px] font-mono w-[100px] sm:w-[120px] shrink-0 select-none backdrop-blur-sm`}
       >
         {/* Top: Score & Stats */}
         <div>
@@ -312,7 +312,7 @@ export function App() {
 
       {/* Top Cyber Navigation Bar (Only for Arena Split, or Collapsed in Tabletop) */}
       {viewMode === 'arena_split' ? (
-        <header className="relative z-30 w-full px-3 py-1.5 h-10 border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md flex items-center justify-between">
+        <header className="relative z-30 w-full px-3 py-1.5 min-h-[44px] pt-[max(env(safe-area-inset-top,0px),8px)] border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md flex items-center justify-between">
           <div className="flex items-center gap-2">
             <button
               onClick={handleReturnMenu}
@@ -451,10 +451,16 @@ export function App() {
 
         {/* VIEW MODE 2: TABLETOP DUEL (Head-to-Head Clash for 2 Players on Same Phone) */}
         {viewMode === 'tabletop_duel' && (
-          <div className="flex-1 flex flex-col justify-between items-center w-full h-full max-w-md mx-auto py-0.5 overflow-hidden">
+          <div className="flex-1 flex flex-col justify-between items-center w-full h-full max-w-md mx-auto pt-[max(env(safe-area-inset-top,0px),24px)] pb-[max(env(safe-area-inset-bottom,0px),14px)] px-1 sm:px-2 overflow-hidden">
             {/* --- TOP HALF: PLAYER 2 (Inverted 180° for Opponent) --- */}
             <div className="rotate-180 flex-1 min-h-0 flex flex-col items-center justify-between w-full py-0.5">
-              {/* P2 Virtual Controls (Right under P2 thumbs at the top edge) */}
+              {/* P2 Board + Side Command Deck */}
+              <div className="flex-1 min-h-0 flex items-center justify-center gap-1.5 sm:gap-2.5 my-auto">
+                <Playfield compact player={p2} isOpponent viewMode="tabletop_duel" />
+                {renderTabletopSidecard(p2)}
+              </div>
+
+              {/* P2 Virtual Controls (Right under P2 thumbs at the top edge of phone when rotated) */}
               {!p2.isAI ? (
                 <div className="shrink-0 mb-0.5 w-full flex justify-center">
                   <VirtualControls
@@ -474,12 +480,6 @@ export function App() {
                   // AI ALPHA ACTIVE //
                 </div>
               )}
-
-              {/* P2 Board + Side Command Deck */}
-              <div className="flex-1 min-h-0 flex items-center justify-center gap-1.5 sm:gap-2.5 my-auto">
-                {renderTabletopSidecard(p2)}
-                <Playfield compact player={p2} isOpponent viewMode="tabletop_duel" />
-              </div>
             </div>
 
             {/* --- CENTER CLASH DIVIDER & SYNCHRO INFORMATION HUB --- */}
