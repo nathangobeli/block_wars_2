@@ -8,6 +8,7 @@ interface PlayfieldProps {
   isOpponent?: boolean;
   viewMode: 'arena_split' | 'tabletop_duel';
   isP2Tabletop?: boolean;
+  compact?: boolean;
 }
 
 export const Playfield: React.FC<PlayfieldProps> = ({
@@ -15,6 +16,7 @@ export const Playfield: React.FC<PlayfieldProps> = ({
   isOpponent = false,
   viewMode,
   isP2Tabletop = false,
+  compact = false,
 }) => {
   const {
     grid,
@@ -99,7 +101,14 @@ export const Playfield: React.FC<PlayfieldProps> = ({
 
   const isPlayer1 = id === 'p1';
   const themeBorderColor = isPlayer1 ? 'border-cyan-500/30' : 'border-pink-500/30';
-  const themeGlow = isPlayer1 ? 'shadow-[0_0_20px_rgba(0,243,255,0.15)]' : 'shadow-[0_0_20px_rgba(255,0,127,0.15)]';
+  const themeGlow = isPlayer1 ? 'shadow-[0_0_15px_rgba(0,243,255,0.15)]' : 'shadow-[0_0_15px_rgba(255,0,127,0.15)]';
+
+  const isTabletop = viewMode === 'tabletop_duel' || compact;
+
+  // Responsive Board Size: exact 1:2 aspect ratio (10 cols : 20 rows)
+  const boardHeightClass = isTabletop
+    ? 'h-[25vh] max-h-[210px] sm:max-h-[300px]'
+    : 'h-[42vh] sm:h-[48vh] max-h-[460px]';
 
   return (
     <div
@@ -108,51 +117,51 @@ export const Playfield: React.FC<PlayfieldProps> = ({
       }`}
     >
       {/* Player Header Banner */}
-      <div className="flex items-center justify-between w-full px-2 py-1 mb-1.5 text-xs font-mono">
-        <div className="flex items-center gap-1.5">
+      <div className={`flex items-center justify-between w-full px-1.5 ${isTabletop ? 'py-0.5 mb-0.5 text-[10px]' : 'py-1 mb-1 text-xs'} font-mono`}>
+        <div className="flex items-center gap-1">
           <div
-            className={`w-2.5 h-2.5 rounded-full ${
-              isPlayer1 ? 'bg-cyan-400 shadow-[0_0_8px_#00f3ff]' : 'bg-pink-500 shadow-[0_0_8px_#ff007f]'
+            className={`w-2 h-2 rounded-full ${
+              isPlayer1 ? 'bg-cyan-400 shadow-[0_0_6px_#00f3ff]' : 'bg-pink-500 shadow-[0_0_6px_#ff007f]'
             }`}
           />
-          <span className="font-bold tracking-wider text-slate-200 uppercase">{name}</span>
+          <span className="font-bold tracking-wider text-slate-200 uppercase truncate max-w-[90px] sm:max-w-none">{name}</span>
           {player.isAI && (
-            <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-slate-800 border border-slate-700 text-slate-300">
-              <Cpu className="w-3 h-3 text-cyan-400" />
-              {player.aiDifficulty.toUpperCase()}
+            <span className="flex items-center gap-0.5 px-1 py-0.2 rounded text-[9px] bg-slate-800 border border-slate-700 text-slate-300">
+              <Cpu className="w-2.5 h-2.5 text-cyan-400" />
+              {player.aiDifficulty[0].toUpperCase()}
             </span>
           )}
         </div>
 
         {/* Status Indicators */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           {shieldActive && (
-            <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-cyan-950/80 border border-cyan-400 text-cyan-300 animate-pulse">
-              <Shield className="w-3 h-3" /> AEGIS
+            <span className="flex items-center gap-0.5 px-1 py-0.2 rounded text-[9px] bg-cyan-950/80 border border-cyan-400 text-cyan-300 animate-pulse">
+              <Shield className="w-2.5 h-2.5" /> AEGIS
             </span>
           )}
           {invertedControlsTurns > 0 && (
-            <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-amber-950/80 border border-amber-400 text-amber-300 animate-bounce">
-              <AlertTriangle className="w-3 h-3" /> INVERT
+            <span className="flex items-center gap-0.5 px-1 py-0.2 rounded text-[9px] bg-amber-950/80 border border-amber-400 text-amber-300 animate-bounce">
+              <AlertTriangle className="w-2.5 h-2.5" /> INVERT
             </span>
           )}
           {cloakedTurns > 0 && (
-            <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-purple-950/80 border border-purple-400 text-purple-300 animate-pulse">
-              <EyeOff className="w-3 h-3" /> CLOAK
+            <span className="flex items-center gap-0.5 px-1 py-0.2 rounded text-[9px] bg-purple-950/80 border border-purple-400 text-purple-300 animate-pulse">
+              <EyeOff className="w-2.5 h-2.5" /> CLOAK
             </span>
           )}
           {isReady && (
-            <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950/90 border border-emerald-400 text-emerald-400 shadow-[0_0_10px_#00ff75]">
-              <CheckCircle2 className="w-3 h-3" /> LOCKED
+            <span className="flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-950/90 border border-emerald-400 text-emerald-400 shadow-[0_0_8px_#00ff75]">
+              <CheckCircle2 className="w-2.5 h-2.5" /> LOCKED
             </span>
           )}
         </div>
       </div>
 
       {/* Main Grid Wrapper with Threat Meter */}
-      <div className="relative flex items-center">
+      <div className={`relative flex items-center ${boardHeightClass}`}>
         {/* Threat Meter: Glowing Garbage Preview Column */}
-        <div className="relative w-2 sm:w-2.5 h-[340px] sm:h-[460px] md:h-[500px] bg-slate-950/80 rounded-l border-y border-l border-slate-800 mr-0.5 overflow-hidden flex flex-col-reverse p-0.5">
+        <div className={`relative ${isTabletop ? 'w-1.5' : 'w-2 sm:w-2.5'} h-full bg-slate-950/80 rounded-l border-y border-l border-slate-800 mr-0.5 overflow-hidden flex flex-col-reverse p-[1px]`}>
           {Array.from({ length: 20 }, (_, idx) => (
             <div
               key={idx}
@@ -167,7 +176,7 @@ export const Playfield: React.FC<PlayfieldProps> = ({
 
         {/* The 10x20 Playfield Board */}
         <div
-          className={`relative w-[200px] sm:w-[260px] md:w-[290px] h-[340px] sm:h-[460px] md:h-[500px] rounded-lg border-2 ${themeBorderColor} ${themeGlow} bg-[#06070B] overflow-hidden ${
+          className={`relative h-full aspect-[1/2] rounded-lg border-2 ${themeBorderColor} ${themeGlow} bg-[#06070B] overflow-hidden ${
             dangerFlash ? 'ring-4 ring-rose-500 ring-opacity-70 animate-pulse' : ''
           }`}
           style={{

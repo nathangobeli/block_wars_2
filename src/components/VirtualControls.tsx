@@ -11,6 +11,7 @@ interface VirtualControlsProps {
   onHardDrop: () => void;
   onAbility?: () => void;
   disabled?: boolean;
+  compact?: boolean;
 }
 
 export const VirtualControls: React.FC<VirtualControlsProps> = ({
@@ -23,6 +24,7 @@ export const VirtualControls: React.FC<VirtualControlsProps> = ({
   onHardDrop,
   onAbility,
   disabled = false,
+  compact = false,
 }) => {
   const triggerHaptic = (ms: number = 15) => {
     if ('vibrate' in navigator) {
@@ -44,61 +46,67 @@ export const VirtualControls: React.FC<VirtualControlsProps> = ({
     action();
   };
 
+  const btnSize = compact
+    ? 'w-8 h-8 min-w-[32px] sm:w-9 sm:h-9 rounded-lg'
+    : 'w-10 h-10 sm:w-12 sm:h-12 rounded-xl';
+  const iconSize = compact ? 'w-4 h-4' : 'w-5 h-5';
+  const hardDropIconSize = compact ? 'w-4 h-4' : 'w-6 h-6';
+
   return (
-    <div className="flex items-center justify-between gap-3 w-full max-w-[340px] px-2 py-1 select-none touch-none">
+    <div className={`flex items-center justify-between ${compact ? 'gap-1.5 max-w-[280px] px-1 py-0.5' : 'gap-2 sm:gap-3 max-w-[340px] px-2 py-1'} w-full select-none touch-none`}>
       {/* Directional Pad */}
-      <div className="flex items-center gap-2">
+      <div className={`flex items-center ${compact ? 'gap-1' : 'gap-2'}`}>
         <button
           type="button"
           disabled={disabled}
           onClick={() => handleAction(onMoveLeft, 12)}
-          className={`w-12 h-12 rounded-xl border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 disabled:opacity-40`}
+          className={`${btnSize} border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 disabled:opacity-40 shadow-sm`}
           aria-label="Move Left"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className={iconSize} />
         </button>
 
         <button
           type="button"
           disabled={disabled}
           onClick={() => handleAction(onMoveRight, 12)}
-          className={`w-12 h-12 rounded-xl border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 disabled:opacity-40`}
+          className={`${btnSize} border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 disabled:opacity-40 shadow-sm`}
           aria-label="Move Right"
         >
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className={iconSize} />
         </button>
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-2">
+      <div className={`flex items-center ${compact ? 'gap-1' : 'gap-2'}`}>
         <button
           type="button"
           disabled={disabled}
           onClick={() => handleAction(onRotate, 20)}
-          className={`w-12 h-12 rounded-xl border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 disabled:opacity-40`}
+          className={`${btnSize} border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 disabled:opacity-40 shadow-sm`}
           aria-label="Rotate"
         >
-          <RotateCw className="w-5 h-5" />
+          <RotateCw className={iconSize} />
         </button>
 
         <button
           type="button"
           disabled={disabled}
           onClick={() => handleAction(onDrop, 25)}
-          className={`w-12 h-12 rounded-xl border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 disabled:opacity-40`}
+          className={`${btnSize} border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 disabled:opacity-40 shadow-sm`}
           aria-label="Soft Drop"
         >
-          <ArrowDown className="w-5 h-5" />
+          <ArrowDown className={iconSize} />
         </button>
 
         <button
           type="button"
           disabled={disabled}
           onClick={() => handleAction(onHardDrop, 35)}
-          className={`w-12 h-12 rounded-xl border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 disabled:opacity-40`}
+          className={`${btnSize} border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 disabled:opacity-40 shadow-sm`}
           aria-label="Hard Drop / Lock"
         >
-          <ChevronsDown className="w-6 h-6" />
+          <ChevronsDown className={hardDropIconSize} />
         </button>
       </div>
     </div>

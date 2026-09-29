@@ -7,13 +7,20 @@
     color-scheme: dark;
   }
   
+  html, body, #root {
+    height: 100%;
+    max-height: 100dvh;
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-overscroll-behavior: none;
+    touch-action: manipulation;
+  }
+
   body {
     background-color: #090A0F;
     color: #e2e8f0;
-    overflow-x: hidden;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: manipulation;
   }
 }
 
