@@ -11,7 +11,7 @@ import { StartMenu } from './components/Modals/StartMenu';
 import { SettingsModal } from './components/Modals/SettingsModal';
 import { RulesModal } from './components/Modals/RulesModal';
 import { GameOverModal } from './components/Modals/GameOverModal';
-import { Settings, BookOpen, Volume2, VolumeX, Pause, Play, RefreshCw, Home, Shield, Swords } from 'lucide-react';
+import { Settings, BookOpen, Volume2, VolumeX, Pause, Play, RefreshCw, Home, Shield, Swords, Zap } from 'lucide-react';
 
 export function App() {
   const {
@@ -198,60 +198,104 @@ export function App() {
     );
   };
 
-  // Tabletop Player Telemetry Sidecard
+  // Tabletop Player Telemetry Sidecard - Matches Board Height & Fills Flank Screenspace
   const renderTabletopSidecard = (player: PlayerState) => {
     const isP1 = player.id === 'p1';
     const textColor = isP1 ? 'text-cyan-400' : 'text-pink-400';
     const borderColor = isP1 ? 'border-cyan-500/30' : 'border-pink-500/30';
-    const glow = isP1 ? 'shadow-[0_0_8px_rgba(0,243,255,0.15)]' : 'shadow-[0_0_8px_rgba(255,0,127,0.15)]';
+    const glow = isP1 ? 'shadow-[0_0_12px_rgba(0,243,255,0.2)]' : 'shadow-[0_0_12px_rgba(255,0,127,0.2)]';
+    const bgHeader = isP1 ? 'bg-cyan-950/60 text-cyan-300' : 'bg-pink-950/60 text-pink-300';
 
     return (
-      <div className={`flex flex-col justify-between h-full py-1 px-1.5 sm:px-2 rounded-lg bg-slate-950/80 border ${borderColor} ${glow} text-[10px] font-mono min-w-[70px] sm:min-w-[85px] max-w-[95px] select-none`}>
+      <div
+        className={`flex flex-col justify-between h-[clamp(225px,37dvh,355px)] sm:h-[clamp(260px,38dvh,420px)] py-1.5 px-2 rounded-lg bg-slate-950/90 border ${borderColor} ${glow} text-[10px] font-mono w-[105px] sm:w-[125px] shrink-0 select-none backdrop-blur-sm`}
+      >
+        {/* Top: Score & Stats */}
         <div>
-          <div className="text-[8px] font-orbitron text-slate-400 uppercase">SCORE</div>
-          <div className={`font-orbitron font-extrabold text-xs sm:text-sm ${textColor} truncate`}>
+          <div className="flex items-center justify-between mb-1 pb-1 border-b border-slate-800">
+            <span className={`px-1 py-0.2 rounded text-[8px] font-orbitron font-bold uppercase truncate max-w-[70px] ${bgHeader}`}>
+              {player.name}
+            </span>
+            <span className="text-[8px] text-slate-500 font-bold">
+              LV.{Math.floor(player.lines / 10) + 1}
+            </span>
+          </div>
+
+          <div className="text-[8px] font-orbitron text-slate-400 uppercase tracking-wider">SCORE</div>
+          <div className={`font-orbitron font-extrabold text-sm sm:text-base ${textColor} tracking-tight leading-none mb-1 truncate`}>
             {player.score.toLocaleString()}
           </div>
-          <div className="text-slate-400 text-[9px] mt-0.5">
-            L: <strong className="text-slate-200">{player.lines}</strong>
+
+          <div className="flex items-center justify-between text-[9px] text-slate-400">
+            <span>LINES</span>
+            <strong className="text-slate-200 font-bold">{player.lines}</strong>
           </div>
+
           {player.combo > 1 && (
-            <div className="text-[8px] text-amber-300 font-bold bg-amber-950/70 border border-amber-500/30 px-1 py-0.2 rounded mt-0.5 text-center animate-pulse">
-              x{player.combo}
+            <div className="text-[8px] text-amber-300 font-bold bg-amber-950/80 border border-amber-500/50 px-1 py-0.5 rounded mt-1 text-center animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.3)]">
+              🔥 STREAK x{player.combo}
+            </div>
+          )}
+
+          {player.pendingGarbage > 0 && (
+            <div className="text-[8px] text-rose-300 font-bold bg-rose-950/90 border border-rose-500/60 px-1 py-0.5 rounded mt-1 text-center animate-bounce shadow-[0_0_8px_rgba(244,63,94,0.4)]">
+              ⚠️ +{player.pendingGarbage} INCOMING
             </div>
           )}
         </div>
 
-        {gameState.mode === 'war' && (
-          <div className="mt-1">
-            <div className="flex justify-between text-[8px] text-slate-400 mb-0.5">
-              <span>WAR</span>
-              <span className={textColor}>{player.warMeter}%</span>
+        {/* Bottom: Cyber War Ability Deck */}
+        {gameState.mode === 'war' ? (
+          <div className="mt-1 pt-1.5 border-t border-slate-800">
+            <div className="flex justify-between items-center text-[8px] text-slate-400 mb-1">
+              <span className="font-orbitron font-bold">WAR ENERGY</span>
+              <span className={`font-bold ${player.warMeter >= 100 ? 'text-amber-400 animate-pulse' : textColor}`}>
+                {player.warMeter}%
+              </span>
             </div>
-            <div className="w-full h-1 bg-slate-900 rounded-full overflow-hidden">
+
+            {/* Glowing segmented meter */}
+            <div className="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden p-[1px] border border-slate-800">
               <div
-                className={`h-full ${player.warMeter >= 100 ? 'bg-amber-400 animate-pulse' : isP1 ? 'bg-cyan-500' : 'bg-pink-500'}`}
+                className={`h-full rounded-full transition-all duration-300 ${
+                  player.warMeter >= 100
+                    ? 'bg-gradient-to-r from-amber-500 to-rose-500 shadow-[0_0_8px_#ffaa00] animate-pulse'
+                    : isP1
+                    ? 'bg-gradient-to-r from-cyan-600 to-cyan-400 shadow-[0_0_6px_#00f3ff]'
+                    : 'bg-gradient-to-r from-pink-600 to-pink-400 shadow-[0_0_6px_#ff007f]'
+                }`}
                 style={{ width: `${player.warMeter}%` }}
               />
             </div>
-            {player.warMeter >= 100 && (
-              <div className="grid grid-cols-2 gap-0.5 mt-1">
+
+            {player.warMeter >= 100 ? (
+              <div className="flex flex-col gap-1 mt-1.5">
                 <button
                   type="button"
                   onClick={() => activateAbility(player.id, 'aegis_shield')}
-                  className="py-0.5 rounded bg-cyan-950/90 border border-cyan-400 text-cyan-300 text-[7px] font-bold active:scale-95"
+                  className="w-full py-1 px-1 rounded bg-cyan-950 border border-cyan-400 text-cyan-300 text-[8px] font-bold active:scale-95 shadow-[0_0_8px_rgba(0,243,255,0.4)] hover:bg-cyan-900 transition-colors flex items-center justify-center gap-1 cursor-pointer touch-manipulation"
                 >
-                  SHIELD
+                  <Shield className="w-2.5 h-2.5 text-cyan-400" />
+                  <span>AEGIS SHIELD</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => activateAbility(player.id, 'plasma_push')}
-                  className="py-0.5 rounded bg-rose-950/90 border border-rose-400 text-rose-300 text-[7px] font-bold active:scale-95"
+                  className="w-full py-1 px-1 rounded bg-rose-950 border border-rose-400 text-rose-300 text-[8px] font-bold active:scale-95 shadow-[0_0_8px_rgba(244,63,94,0.4)] hover:bg-rose-900 transition-colors flex items-center justify-center gap-1 cursor-pointer touch-manipulation"
                 >
-                  PLASMA
+                  <Zap className="w-2.5 h-2.5 text-rose-400" />
+                  <span>PLASMA STRIKE</span>
                 </button>
               </div>
+            ) : (
+              <div className="text-[7px] text-slate-500 text-center mt-1 uppercase font-bold tracking-tight">
+                CLEAR LINES TO CHARGE
+              </div>
             )}
+          </div>
+        ) : (
+          <div className="mt-1 pt-1 border-t border-slate-800 text-[8px] text-slate-500 text-center font-orbitron">
+            ARCADE DUEL
           </div>
         )}
       </div>
@@ -350,11 +394,11 @@ export function App() {
             </div>
 
             {/* Side-by-side Boards */}
-            <div className="flex-1 flex items-center justify-center gap-1 sm:gap-3 w-full my-auto overflow-hidden">
+            <div className="flex-1 flex items-center justify-center gap-1.5 sm:gap-4 w-full my-auto overflow-hidden">
               {/* P1 Board */}
-              <div className="flex flex-col items-center h-full justify-center">
+              <div className="flex flex-col items-center justify-center max-w-[46vw]">
                 <Playfield player={p1} viewMode="arena_split" />
-                <div className="mt-1 block">
+                <div className="mt-1 block w-full">
                   <VirtualControls
                     compact
                     playerId="p1"
@@ -379,10 +423,10 @@ export function App() {
               </div>
 
               {/* P2 Board */}
-              <div className="flex flex-col items-center h-full justify-center">
+              <div className="flex flex-col items-center justify-center max-w-[46vw]">
                 <Playfield player={p2} isOpponent viewMode="arena_split" />
                 {!p2.isAI ? (
-                  <div className="mt-1 block">
+                  <div className="mt-1 block w-full">
                     <VirtualControls
                       compact
                       playerId="p2"
@@ -409,10 +453,10 @@ export function App() {
         {viewMode === 'tabletop_duel' && (
           <div className="flex-1 flex flex-col justify-between items-center w-full h-full max-w-md mx-auto py-0.5 overflow-hidden">
             {/* --- TOP HALF: PLAYER 2 (Inverted 180° for Opponent) --- */}
-            <div className="rotate-180 flex flex-col items-center w-full shrink-0">
+            <div className="rotate-180 flex-1 min-h-0 flex flex-col items-center justify-between w-full py-0.5">
               {/* P2 Virtual Controls (Right under P2 thumbs at the top edge) */}
               {!p2.isAI ? (
-                <div className="mb-0.5">
+                <div className="shrink-0 mb-0.5 w-full flex justify-center">
                   <VirtualControls
                     compact
                     playerId="p2"
@@ -426,43 +470,43 @@ export function App() {
                   />
                 </div>
               ) : (
-                <div className="text-[9px] font-mono text-pink-400 py-0.5 text-center">
+                <div className="text-[9px] font-mono text-pink-400 py-0.5 text-center shrink-0">
                   // AI ALPHA ACTIVE //
                 </div>
               )}
 
-              {/* P2 Board + Side Telemetry */}
-              <div className="flex items-center justify-center gap-1.5">
+              {/* P2 Board + Side Command Deck */}
+              <div className="flex-1 min-h-0 flex items-center justify-center gap-1.5 sm:gap-2.5 my-auto">
                 {renderTabletopSidecard(p2)}
                 <Playfield compact player={p2} isOpponent viewMode="tabletop_duel" />
               </div>
             </div>
 
             {/* --- CENTER CLASH DIVIDER & SYNCHRO INFORMATION HUB --- */}
-            <div className="relative w-full flex items-center justify-between px-2 my-0.5 shrink-0 z-30">
+            <div className="relative w-full flex items-center justify-between px-2 my-0.5 shrink-0 z-30 h-8 sm:h-9">
               {/* Left Plasma Laser */}
               <div className="flex-1 h-1.5 bg-gradient-to-r from-pink-500 to-cyan-400 rounded-full shadow-[0_0_8px_#00f3ff]" />
 
               {/* Center Synchro Preview & Controls Capsule */}
-              <div className="mx-2 px-2 py-0.5 rounded-full bg-slate-950/95 border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center gap-2">
+              <div className="mx-2 px-2.5 py-0.5 rounded-full bg-slate-950/95 border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center gap-2">
                 {/* Floating Fast Utilities */}
                 <button
                   onClick={togglePause}
                   className="p-1 rounded-full text-slate-400 hover:text-cyan-400 transition-colors"
                   title="Pause"
                 >
-                  {gameState.isPaused ? <Play className="w-3 h-3 text-cyan-400" /> : <Pause className="w-3 h-3" />}
+                  {gameState.isPaused ? <Play className="w-3.5 h-3.5 text-cyan-400" /> : <Pause className="w-3.5 h-3.5" />}
                 </button>
 
                 {/* Synchro Next Piece Preview */}
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <span className="text-[8px] font-orbitron font-bold text-slate-400">NEXT:</span>
                   {renderMiniNext(gameState.nextPiece)}
                 </div>
 
                 {/* Blitz Countdown */}
                 {gameState.blitzTimerEnabled && (
-                  <span className="text-[9px] font-mono font-bold text-cyan-400">
+                  <span className="text-[9px] font-mono font-bold text-cyan-400 animate-pulse">
                     {(gameState.blitzTimeRemaining / 1000).toFixed(1)}s
                   </span>
                 )}
@@ -472,7 +516,7 @@ export function App() {
                   className="p-1 rounded-full text-slate-400 hover:text-purple-400 transition-colors"
                   title="Sound"
                 >
-                  {musicEnabled ? <Volume2 className="w-3 h-3 text-purple-400" /> : <VolumeX className="w-3 h-3" />}
+                  {musicEnabled ? <Volume2 className="w-3.5 h-3.5 text-purple-400" /> : <VolumeX className="w-3.5 h-3.5" />}
                 </button>
 
                 <button
@@ -480,7 +524,7 @@ export function App() {
                   className="p-1 rounded-full text-slate-400 hover:text-pink-400 transition-colors"
                   title="Menu"
                 >
-                  <Home className="w-3 h-3" />
+                  <Home className="w-3.5 h-3.5" />
                 </button>
               </div>
 
@@ -489,15 +533,15 @@ export function App() {
             </div>
 
             {/* --- BOTTOM HALF: PLAYER 1 (Facing Player 1) --- */}
-            <div className="flex flex-col items-center w-full shrink-0">
-              {/* P1 Board + Side Telemetry */}
-              <div className="flex items-center justify-center gap-1.5">
+            <div className="flex-1 min-h-0 flex flex-col items-center justify-between w-full py-0.5">
+              {/* P1 Board + Side Command Deck */}
+              <div className="flex-1 min-h-0 flex items-center justify-center gap-1.5 sm:gap-2.5 my-auto">
                 <Playfield compact player={p1} viewMode="tabletop_duel" />
                 {renderTabletopSidecard(p1)}
               </div>
 
               {/* P1 Virtual Controls (Right under P1 thumbs at bottom edge) */}
-              <div className="mt-0.5">
+              <div className="shrink-0 mt-0.5 w-full flex justify-center">
                 <VirtualControls
                   compact
                   playerId="p1"

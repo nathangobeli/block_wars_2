@@ -9,6 +9,7 @@ interface PlayfieldProps {
   viewMode: 'arena_split' | 'tabletop_duel';
   isP2Tabletop?: boolean;
   compact?: boolean;
+  customHeightClass?: string;
 }
 
 export const Playfield: React.FC<PlayfieldProps> = ({
@@ -17,6 +18,7 @@ export const Playfield: React.FC<PlayfieldProps> = ({
   viewMode,
   isP2Tabletop = false,
   compact = false,
+  customHeightClass,
 }) => {
   const {
     grid,
@@ -106,9 +108,13 @@ export const Playfield: React.FC<PlayfieldProps> = ({
   const isTabletop = viewMode === 'tabletop_duel' || compact;
 
   // Responsive Board Size: exact 1:2 aspect ratio (10 cols : 20 rows)
-  const boardHeightClass = isTabletop
-    ? 'h-[25vh] max-h-[210px] sm:max-h-[300px]'
-    : 'h-[42vh] sm:h-[48vh] max-h-[460px]';
+  // Tabletop Duel: Fills the player's half of the phone screen with massive 10x20 grid
+  // Arena Split: Side-by-side vertical arcade view
+  const defaultHeightClass = isTabletop
+    ? 'h-[clamp(225px,37dvh,355px)] sm:h-[clamp(260px,38dvh,420px)]'
+    : 'h-[clamp(280px,50vh,540px)] sm:h-[clamp(320px,56vh,580px)] max-w-[45vw]';
+
+  const boardHeightClass = customHeightClass || defaultHeightClass;
 
   return (
     <div
@@ -161,11 +167,11 @@ export const Playfield: React.FC<PlayfieldProps> = ({
       {/* Main Grid Wrapper with Threat Meter */}
       <div className={`relative flex items-center ${boardHeightClass}`}>
         {/* Threat Meter: Glowing Garbage Preview Column */}
-        <div className={`relative ${isTabletop ? 'w-1.5' : 'w-2 sm:w-2.5'} h-full bg-slate-950/80 rounded-l border-y border-l border-slate-800 mr-0.5 overflow-hidden flex flex-col-reverse p-[1px]`}>
+        <div className={`relative ${isTabletop ? 'w-2' : 'w-2.5 sm:w-3'} h-full bg-slate-950/80 rounded-l border-y border-l border-slate-800 mr-0.5 overflow-hidden flex flex-col-reverse p-[1px]`}>
           {Array.from({ length: 20 }, (_, idx) => (
             <div
               key={idx}
-              className={`w-full h-1 my-0.5 rounded-sm transition-all duration-300 ${
+              className={`w-full flex-1 my-[0.5px] rounded-[1px] transition-all duration-300 ${
                 idx < pendingGarbage
                   ? 'bg-rose-500 shadow-[0_0_6px_#ff2a55]'
                   : 'bg-transparent'

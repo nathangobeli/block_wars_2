@@ -47,20 +47,26 @@ export const VirtualControls: React.FC<VirtualControlsProps> = ({
   };
 
   const btnSize = compact
-    ? 'w-8 h-8 min-w-[32px] sm:w-9 sm:h-9 rounded-lg'
-    : 'w-10 h-10 sm:w-12 sm:h-12 rounded-xl';
-  const iconSize = compact ? 'w-4 h-4' : 'w-5 h-5';
-  const hardDropIconSize = compact ? 'w-4 h-4' : 'w-6 h-6';
+    ? 'w-9 h-9 sm:w-10 sm:h-10 rounded-xl'
+    : 'w-11 h-11 sm:w-12 sm:h-12 rounded-xl';
+  const iconSize = compact ? 'w-4.5 h-4.5 sm:w-5 sm:h-5' : 'w-5 h-5 sm:w-6 sm:h-6';
+  const hardDropIconSize = compact ? 'w-5 h-5 sm:w-5.5 sm:h-5.5' : 'w-6 h-6 sm:w-7 sm:h-7';
 
   return (
-    <div className={`flex items-center justify-between ${compact ? 'gap-1.5 max-w-[280px] px-1 py-0.5' : 'gap-2 sm:gap-3 max-w-[340px] px-2 py-1'} w-full select-none touch-none`}>
+    <div
+      className={`flex items-center justify-between ${
+        compact
+          ? 'gap-2 max-w-[360px] sm:max-w-[420px] px-2 sm:px-4 py-0.5'
+          : 'gap-2 sm:gap-3 max-w-[360px] sm:max-w-[420px] px-2 py-1'
+      } w-full select-none touch-none`}
+    >
       {/* Directional Pad */}
-      <div className={`flex items-center ${compact ? 'gap-1' : 'gap-2'}`}>
+      <div className={`flex items-center ${compact ? 'gap-1.5' : 'gap-2'}`}>
         <button
           type="button"
           disabled={disabled}
           onClick={() => handleAction(onMoveLeft, 12)}
-          className={`${btnSize} border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 disabled:opacity-40 shadow-sm`}
+          className={`${btnSize} border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 active:bg-opacity-90 disabled:opacity-30 shadow-md touch-manipulation cursor-pointer`}
           aria-label="Move Left"
         >
           <ArrowLeft className={iconSize} />
@@ -70,7 +76,7 @@ export const VirtualControls: React.FC<VirtualControlsProps> = ({
           type="button"
           disabled={disabled}
           onClick={() => handleAction(onMoveRight, 12)}
-          className={`${btnSize} border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 disabled:opacity-40 shadow-sm`}
+          className={`${btnSize} border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 active:bg-opacity-90 disabled:opacity-30 shadow-md touch-manipulation cursor-pointer`}
           aria-label="Move Right"
         >
           <ArrowRight className={iconSize} />
@@ -78,12 +84,12 @@ export const VirtualControls: React.FC<VirtualControlsProps> = ({
       </div>
 
       {/* Action Buttons */}
-      <div className={`flex items-center ${compact ? 'gap-1' : 'gap-2'}`}>
+      <div className={`flex items-center ${compact ? 'gap-1.5' : 'gap-2'}`}>
         <button
           type="button"
           disabled={disabled}
           onClick={() => handleAction(onRotate, 20)}
-          className={`${btnSize} border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 disabled:opacity-40 shadow-sm`}
+          className={`${btnSize} border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 active:bg-opacity-90 disabled:opacity-30 shadow-md touch-manipulation cursor-pointer`}
           aria-label="Rotate"
         >
           <RotateCw className={iconSize} />
@@ -93,7 +99,7 @@ export const VirtualControls: React.FC<VirtualControlsProps> = ({
           type="button"
           disabled={disabled}
           onClick={() => handleAction(onDrop, 25)}
-          className={`${btnSize} border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 disabled:opacity-40 shadow-sm`}
+          className={`${btnSize} border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 active:bg-opacity-90 disabled:opacity-30 shadow-md touch-manipulation cursor-pointer`}
           aria-label="Soft Drop"
         >
           <ArrowDown className={iconSize} />
@@ -103,7 +109,7 @@ export const VirtualControls: React.FC<VirtualControlsProps> = ({
           type="button"
           disabled={disabled}
           onClick={() => handleAction(onHardDrop, 35)}
-          className={`${btnSize} border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 disabled:opacity-40 shadow-sm`}
+          className={`${btnSize} border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 active:bg-opacity-90 disabled:opacity-30 shadow-md touch-manipulation cursor-pointer`}
           aria-label="Hard Drop / Lock"
         >
           <ChevronsDown className={hardDropIconSize} />
