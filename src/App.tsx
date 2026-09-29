@@ -33,7 +33,7 @@ export function App() {
   const [selectedMode, setSelectedMode] = useState<GameMode>('versus');
   const [matchMode, setMatchMode] = useState<MatchPlayerMode>('p1_vs_ai');
   const [aiDifficulty, setAiDifficulty] = useState<AIDifficulty>('medium');
-  const [viewMode, setViewMode] = useState<ViewMode>('arena_split');
+  const [viewMode, setViewMode] = useState<ViewMode>('tabletop_duel');
   const [blitzEnabled, setBlitzEnabled] = useState<boolean>(false);
   const [blitzDuration, setBlitzDuration] = useState<number>(5);
   const [scoreAttackLimit, setScoreAttackLimit] = useState<number>(50);

@@ -149,27 +149,27 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
             <div className="grid grid-cols-2 gap-2">
               <button
-                onClick={() => onSetViewMode('arena_split')}
-                className={`p-2 rounded-lg border text-xs font-mono font-bold flex items-center justify-center gap-1.5 ${
-                  viewMode === 'arena_split'
-                    ? 'bg-cyan-950/80 border-cyan-400 text-cyan-300'
-                    : 'bg-slate-950/40 border-slate-800 text-slate-400'
-                }`}
-              >
-                <Monitor className="w-4 h-4" />
-                <span>ARENA SPLIT</span>
-              </button>
-
-              <button
                 onClick={() => onSetViewMode('tabletop_duel')}
                 className={`p-2 rounded-lg border text-xs font-mono font-bold flex items-center justify-center gap-1.5 ${
                   viewMode === 'tabletop_duel'
-                    ? 'bg-pink-950/80 border-pink-400 text-pink-300'
+                    ? 'bg-cyan-950/80 border-cyan-400 text-cyan-300'
                     : 'bg-slate-950/40 border-slate-800 text-slate-400'
                 }`}
               >
                 <Eye className="w-4 h-4" />
                 <span>TABLETOP DUEL</span>
+              </button>
+
+              <button
+                onClick={() => onSetViewMode('arena_split')}
+                className={`p-2 rounded-lg border text-xs font-mono font-bold flex items-center justify-center gap-1.5 ${
+                  viewMode === 'arena_split'
+                    ? 'bg-pink-950/80 border-pink-400 text-pink-300'
+                    : 'bg-slate-950/40 border-slate-800 text-slate-400'
+                }`}
+              >
+                <Monitor className="w-4 h-4" />
+                <span>ARENA SPLIT</span>
               </button>
             </div>
           </div>

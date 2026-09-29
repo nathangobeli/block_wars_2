@@ -69,7 +69,7 @@ export function useGameEngine() {
 
   const [gameState, setGameState] = useState<GameState>({
     mode: 'versus',
-    viewMode: 'arena_split',
+    viewMode: 'tabletop_duel',
     matchMode: 'p1_vs_ai',
     isPlaying: false,
     isPaused: false,

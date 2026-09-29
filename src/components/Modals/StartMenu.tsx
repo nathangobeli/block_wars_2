@@ -221,33 +221,33 @@ export const StartMenu: React.FC<StartMenuProps> = ({
             </div>
             <div className="grid grid-cols-2 gap-2">
               <button
+                onClick={() => onSelectViewMode('tabletop_duel')}
+                className={`p-2.5 rounded-lg border text-xs font-mono font-bold flex flex-col items-center gap-1 text-center transition-all ${
+                  viewMode === 'tabletop_duel'
+                    ? 'bg-cyan-950/80 border-cyan-400 text-cyan-300 shadow-[0_0_12px_rgba(0,243,255,0.3)]'
+                    : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
+                }`}
+              >
+                <span className="font-orbitron">TABLETOP DUEL</span>
+                <span className="text-[10px] text-cyan-400 font-normal">Head-to-Head (Default)</span>
+              </button>
+
+              <button
                 onClick={() => onSelectViewMode('arena_split')}
                 className={`p-2.5 rounded-lg border text-xs font-mono font-bold flex flex-col items-center gap-1 text-center transition-all ${
                   viewMode === 'arena_split'
-                    ? 'bg-cyan-950/80 border-cyan-400 text-cyan-300 shadow-[0_0_12px_rgba(0,243,255,0.3)]'
+                    ? 'bg-pink-950/80 border-pink-400 text-pink-300 shadow-[0_0_12px_rgba(255,0,127,0.3)]'
                     : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
                 }`}
               >
                 <span className="font-orbitron">ARENA SPLIT</span>
                 <span className="text-[10px] text-slate-400 font-normal">Side-by-Side (Desktop)</span>
               </button>
-
-              <button
-                onClick={() => onSelectViewMode('tabletop_duel')}
-                className={`p-2.5 rounded-lg border text-xs font-mono font-bold flex flex-col items-center gap-1 text-center transition-all ${
-                  viewMode === 'tabletop_duel'
-                    ? 'bg-pink-950/80 border-pink-400 text-pink-300 shadow-[0_0_12px_rgba(255,0,127,0.3)]'
-                    : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
-                }`}
-              >
-                <span className="font-orbitron">TABLETOP DUEL</span>
-                <span className="text-[10px] text-slate-400 font-normal">Clash (iPad / Tablet)</span>
-              </button>
             </div>
             <div className="text-[11px] font-mono text-slate-400 mt-2">
-              {viewMode === 'arena_split'
-                ? 'Standard side-by-side vertical drop boards with central laser clash HUD.'
-                : 'Head-to-head opposing clash: Player 2 inverted 180° for tabletop iPad battle.'}
+              {viewMode === 'tabletop_duel'
+                ? 'Head-to-head opposing clash: Player 2 inverted 180° for 2 players facing each other on one phone or tablet.'
+                : 'Standard side-by-side vertical drop boards with central laser clash HUD.'}
             </div>
           </div>
 
