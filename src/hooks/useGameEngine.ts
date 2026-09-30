@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import confetti from 'canvas-confetti';
 import {
   GameState,
   PlayerState,
@@ -12,6 +13,7 @@ import {
   Cell,
   WackyEventType,
   ActiveWackyEvent,
+  BlastEffect,
 } from '../types';
 import {
   GRID_WIDTH,
@@ -58,9 +60,11 @@ const createInitialPlayerState = (
     highestCombo: 0,
     piecesDropped: 0,
     specialBlocksTriggered: 0,
+    actionsCount: 0,
   },
   dangerFlash: false,
   aiThinking: false,
+  blastEffects: [],
 });
 
 export function useGameEngine() {
@@ -119,6 +123,10 @@ export function useGameEngine() {
       scoreAttackLimit: number
     ) => {
       soundEngine.resume();
+      confetti.reset();
+      if (fxTriggersRef.current) {
+        fxTriggersRef.current.clearFX();
+      }
       bagGenRef.current.reset();
 
       const firstPiece = bagGenRef.current.getNextPiece();
@@ -181,7 +189,12 @@ export function useGameEngine() {
           soundEngine.playMove();
           const newPiece = { ...player.activePiece, x: targetX };
           const ghostY = calculateGhostY(player.grid, newPiece);
-          return { ...player, activePiece: newPiece, ghostY };
+          return {
+            ...player,
+            activePiece: newPiece,
+            ghostY,
+            stats: { ...player.stats, actionsCount: player.stats.actionsCount + 1 },
+          };
         }
         return player;
       };
@@ -203,7 +216,12 @@ export function useGameEngine() {
         if (rotated) {
           soundEngine.playRotate();
           const ghostY = calculateGhostY(player.grid, newPiece);
-          return { ...player, activePiece: newPiece, ghostY };
+          return {
+            ...player,
+            activePiece: newPiece,
+            ghostY,
+            stats: { ...player.stats, actionsCount: player.stats.actionsCount + 1 },
+          };
         }
         return player;
       };
@@ -227,6 +245,7 @@ export function useGameEngine() {
           return {
             ...player,
             activePiece: { ...player.activePiece, y: nextY },
+            stats: { ...player.stats, actionsCount: player.stats.actionsCount + 1 },
           };
         }
         return player;
@@ -257,6 +276,7 @@ export function useGameEngine() {
           stats: {
             ...player.stats,
             piecesDropped: player.stats.piecesDropped + 1,
+            actionsCount: player.stats.actionsCount + 1,
           },
         };
       };
@@ -293,7 +313,11 @@ export function useGameEngine() {
           ...p,
           shieldActive: true,
           warMeter: p.warMeter - abilityInfo.cost,
-          stats: { ...p.stats, abilitiesUsed: p.stats.abilitiesUsed + 1 },
+          stats: {
+            ...p.stats,
+            abilitiesUsed: p.stats.abilitiesUsed + 1,
+            actionsCount: p.stats.actionsCount + 1,
+          },
         });
         if (playerId === 'p1') setP1(updater);
         else setP2(updater);
@@ -309,7 +333,11 @@ export function useGameEngine() {
             ...p,
             grid: newGrid,
             warMeter: p.warMeter - abilityInfo.cost,
-            stats: { ...p.stats, abilitiesUsed: p.stats.abilitiesUsed + 1 },
+            stats: {
+              ...p.stats,
+              abilitiesUsed: p.stats.abilitiesUsed + 1,
+              actionsCount: p.stats.actionsCount + 1,
+            },
           };
         };
         if (playerId === 'p1') setP1(updater);
@@ -323,7 +351,11 @@ export function useGameEngine() {
         const userUpdater = (p: PlayerState) => ({
           ...p,
           warMeter: p.warMeter - abilityInfo.cost,
-          stats: { ...p.stats, abilitiesUsed: p.stats.abilitiesUsed + 1 },
+          stats: {
+            ...p.stats,
+            abilitiesUsed: p.stats.abilitiesUsed + 1,
+            actionsCount: p.stats.actionsCount + 1,
+          },
         });
 
         if (playerId === 'p1') {
@@ -345,7 +377,11 @@ export function useGameEngine() {
         const userUpdater = (p: PlayerState) => ({
           ...p,
           warMeter: p.warMeter - abilityInfo.cost,
-          stats: { ...p.stats, abilitiesUsed: p.stats.abilitiesUsed + 1 },
+          stats: {
+            ...p.stats,
+            abilitiesUsed: p.stats.abilitiesUsed + 1,
+            actionsCount: p.stats.actionsCount + 1,
+          },
         });
 
         setLastAttacker(playerId);
@@ -363,7 +399,7 @@ export function useGameEngine() {
 
   // Turn Resolution Engine: Triggered when BOTH players are ready
   useEffect(() => {
-    if (!gameState.isPlaying || gameState.isGameOver) return;
+    if (!gameState.isPlaying || gameState.isPaused || gameState.isGameOver) return;
     if (!p1.isReady || !p2.isReady) return;
 
     // Both players locked in! Resolve simultaneously
@@ -402,9 +438,10 @@ export function useGameEngine() {
         grid: Grid,
         piece: Piece | null,
         isP1: boolean
-      ): { grid: Grid; bonusGarbage: number } => {
+      ): { grid: Grid; bonusGarbage: number; blastEffect?: BlastEffect } => {
         let bonusGarbage = 0;
-        if (!piece || !piece.isSpecial) return { grid, bonusGarbage };
+        let blastEffect: BlastEffect | undefined = undefined;
+        if (!piece || !piece.isSpecial) return { grid, bonusGarbage, blastEffect };
 
         const centerX = piece.x + Math.floor(piece.shape[0].length / 2);
         const centerY = piece.y + Math.floor(piece.shape.length / 2);
@@ -417,7 +454,17 @@ export function useGameEngine() {
           if (fxTriggersRef.current) {
             fxTriggersRef.current.addExplosion(screenX, screenY, false);
             fxTriggersRef.current.addFloatingText('3x3 BLAST!', screenX, screenY - 20, '#ff4400');
+            fxTriggersRef.current.triggerScreenShake(10);
           }
+          blastEffect = {
+            id: Math.random().toString(36).substring(2, 9),
+            centerX,
+            centerY,
+            radius: 1,
+            color: '#ff4400',
+            isGiganto: false,
+            timestamp: Date.now(),
+          };
           for (let dy = -1; dy <= 1; dy++) {
             for (let dx = -1; dx <= 1; dx++) {
               const by = centerY + dy;
@@ -435,7 +482,17 @@ export function useGameEngine() {
           if (fxTriggersRef.current) {
             fxTriggersRef.current.addExplosion(screenX, screenY, true);
             fxTriggersRef.current.addFloatingText('6x6 GIGANTO BLAST!', screenX, screenY - 20, '#ff00aa');
+            fxTriggersRef.current.triggerScreenShake(18);
           }
+          blastEffect = {
+            id: Math.random().toString(36).substring(2, 9),
+            centerX,
+            centerY,
+            radius: 3,
+            color: '#ff00aa',
+            isGiganto: true,
+            timestamp: Date.now(),
+          };
           for (let dy = -3; dy <= 3; dy++) {
             for (let dx = -3; dx <= 3; dx++) {
               const by = centerY + dy;
@@ -470,7 +527,7 @@ export function useGameEngine() {
           else p2SpecialTriggers++;
         }
 
-        return { grid, bonusGarbage };
+        return { grid, bonusGarbage, blastEffect };
       };
 
       const p1Special = resolveSpecialBlock(p1Grid, p1.activePiece, true);
@@ -740,6 +797,7 @@ export function useGameEngine() {
       }
 
       // Update Player 1
+      const now = Date.now();
       setP1(prev => ({
         ...prev,
         grid: p1Grid,
@@ -757,6 +815,10 @@ export function useGameEngine() {
         blackoutTurns: nextWackyEvent?.type === 'blackout' ? 3 : Math.max(0, prev.blackoutTurns - 1),
         dangerFlash: p1Danger,
         aiThinking: false,
+        blastEffects: [
+          ...(prev.blastEffects || []).filter(b => now - b.timestamp < 1000),
+          ...(p1Special.blastEffect ? [p1Special.blastEffect] : []),
+        ],
         stats: {
           ...prev.stats,
           score: prev.score + p1ScoreAdd,
@@ -785,6 +847,10 @@ export function useGameEngine() {
         blackoutTurns: nextWackyEvent?.type === 'blackout' ? 3 : Math.max(0, prev.blackoutTurns - 1),
         dangerFlash: p2Danger,
         aiThinking: false,
+        blastEffects: [
+          ...(prev.blastEffects || []).filter(b => now - b.timestamp < 1000),
+          ...(p2Special.blastEffect ? [p2Special.blastEffect] : []),
+        ],
         stats: {
           ...prev.stats,
           score: prev.score + p2ScoreAdd,
@@ -841,18 +907,27 @@ export function useGameEngine() {
           }
 
           // Apply X translation
+          const originalX = piece.x;
           if (!checkCollision(p.grid, piece.shape, best.x, piece.y)) {
             piece.x = best.x;
           }
+          const shiftMoves = Math.abs(piece.x - originalX);
+          const rotateMoves = best.rotation;
+          const dropMove = 1;
+          let abilityMove = 0;
 
-          // Smart Ability Deployment for AI
-          if (p.warMeter >= 100 && gameState.mode === 'war') {
+          // Smart Ability Deployment for AI (works in 'war' and 'versus')
+          if (p.warMeter >= 100 && (gameState.mode === 'war' || gameState.mode === 'versus')) {
             if (p.pendingGarbage > 2) {
               activateAbility(p.id, 'aegis_shield');
+              abilityMove = 1;
             } else if (Math.random() < 0.5) {
               activateAbility(p.id, 'plasma_push');
+              abilityMove = 1;
             }
           }
+
+          const totalAiActions = rotateMoves + shiftMoves + dropMove + abilityMove;
 
           // Drop & Lock In
           const ghostY = calculateGhostY(p.grid, piece);
@@ -867,6 +942,7 @@ export function useGameEngine() {
             stats: {
               ...p.stats,
               piecesDropped: p.stats.piecesDropped + 1,
+              actionsCount: p.stats.actionsCount + totalAiActions,
             },
           };
         });

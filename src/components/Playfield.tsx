@@ -276,6 +276,65 @@ export const Playfield: React.FC<PlayfieldProps> = ({
             })
           )}
 
+          {/* Bomb Detonation Visual Flash & Shockwave Over Grid */}
+          {player.blastEffects && player.blastEffects.map((blast) => {
+            const leftCol = Math.max(0, blast.centerX - blast.radius);
+            const topRow = Math.max(0, blast.centerY - blast.radius);
+            const rightCol = Math.min(GRID_WIDTH, blast.centerX + blast.radius + 1);
+            const bottomRow = Math.min(GRID_HEIGHT, blast.centerY + blast.radius + 1);
+
+            const leftPct = leftCol * 10;
+            const topPct = topRow * 5;
+            const widthPct = (rightCol - leftCol) * 10;
+            const heightPct = (bottomRow - topRow) * 5;
+
+            return (
+              <React.Fragment key={blast.id}>
+                {/* 1. Bright expanding detonation ring */}
+                <div
+                  className="absolute pointer-events-none z-30 rounded-lg animate-ping"
+                  style={{
+                    left: `${leftPct}%`,
+                    top: `${topPct}%`,
+                    width: `${widthPct}%`,
+                    height: `${heightPct}%`,
+                    border: blast.isGiganto ? '3px solid #ff00aa' : '3px solid #ffaa00',
+                    background: blast.isGiganto
+                      ? 'radial-gradient(circle, rgba(255,0,170,0.85) 0%, rgba(255,255,255,0.4) 30%, transparent 75%)'
+                      : 'radial-gradient(circle, rgba(255,170,0,0.9) 0%, rgba(255,68,0,0.6) 40%, transparent 75%)',
+                    boxShadow: blast.isGiganto
+                      ? '0 0 40px #ff00aa, inset 0 0 30px #ffffff'
+                      : '0 0 35px #ff5500, inset 0 0 25px #ffea00',
+                    animationDuration: '650ms',
+                  }}
+                />
+
+                {/* 2. Distinct 3x3 / 6x6 blast flash zone with glowing border and clear effect badge */}
+                <div
+                  className="absolute pointer-events-none z-25 rounded-md flex flex-col items-center justify-center animate-pulse"
+                  style={{
+                    left: `${leftPct}%`,
+                    top: `${topPct}%`,
+                    width: `${widthPct}%`,
+                    height: `${heightPct}%`,
+                    border: blast.isGiganto ? '2px dashed #ff00aa' : '2px dashed #ffea00',
+                    background: blast.isGiganto
+                      ? 'rgba(255, 0, 170, 0.4)'
+                      : 'rgba(255, 100, 0, 0.45)',
+                    boxShadow: blast.isGiganto
+                      ? '0 0 25px rgba(255,0,170,0.6), inset 0 0 15px rgba(255,0,170,0.3)'
+                      : '0 0 25px rgba(255,100,0,0.6), inset 0 0 15px rgba(255,200,0,0.4)',
+                  }}
+                >
+                  <div className="px-1.5 py-0.5 rounded bg-black/85 border border-white/50 text-[8px] sm:text-[9px] font-orbitron font-extrabold text-white tracking-wider shadow-lg flex items-center gap-1">
+                    <Bomb className="w-2.5 h-2.5 text-amber-300 animate-spin" />
+                    <span>{blast.isGiganto ? '6x6 GIGANTO BLAST' : '3x3 BLAST'}</span>
+                  </div>
+                </div>
+              </React.Fragment>
+            );
+          })}
+
           {/* Blackout Fog of War Glitch */}
           {blackoutTurns > 0 && (
             <div className="absolute inset-0 bg-black/90 pointer-events-none backdrop-blur-sm flex items-center justify-center">

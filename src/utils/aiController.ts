@@ -83,9 +83,9 @@ export function computeBestMove(
 
   // Weights
   const weights = {
-    easy: { height: -0.3, lines: 1.5, holes: -0.8, bumpiness: -0.1 },
-    medium: { height: -0.51, lines: 3.5, holes: -2.8, bumpiness: -0.2 },
-    hard: { height: -0.65, lines: 4.8, holes: -5.0, bumpiness: -0.32 },
+    easy: { height: -0.25, lines: 1.2, holes: -0.6, bumpiness: -0.08 },
+    medium: { height: -0.55, lines: 7.5, holes: -3.8, bumpiness: -0.28 },
+    hard: { height: -0.65, lines: 9.2, holes: -5.5, bumpiness: -0.35 },
   }[difficulty];
 
   // Test rotations (0, 1, 2, 3)
@@ -132,12 +132,21 @@ export function computeBestMove(
       const holes = getHoleCount(simGrid);
       const bumpiness = getBumpiness(heights);
 
+      // Aggressive line clearing bonus for Medium and Hard
+      const lineClearBonus =
+        difficulty === 'easy'
+          ? (linesCleared > 0 ? 5 : 0)
+          : linesCleared > 0
+          ? (linesCleared >= 4 ? 40 : linesCleared * 10)
+          : 0;
+
       const score =
         weights.height * aggregateHeight +
         weights.lines * linesCleared * linesCleared +
         weights.holes * holes +
         weights.bumpiness * bumpiness +
-        specialBonus;
+        specialBonus +
+        lineClearBonus;
 
       possibleMoves.push({
         rotation: rot,
@@ -152,7 +161,7 @@ export function computeBestMove(
   }
 
   if (possibleMoves.length === 0) {
-    return { x: piece.x, rotation: 0, dropDelayMs: 400 };
+    return { x: piece.x, rotation: 0, dropDelayMs: 300 };
   }
 
   // Sort descending by score
@@ -161,22 +170,22 @@ export function computeBestMove(
   let chosenMove = possibleMoves[0];
 
   if (difficulty === 'easy') {
-    // 35% chance to pick random move from top 10
+    // 35% chance to pick random move from top 10 (very forgiving)
     if (Math.random() < 0.35 && possibleMoves.length > 1) {
       const idx = Math.floor(Math.random() * Math.min(10, possibleMoves.length));
       chosenMove = possibleMoves[idx];
     }
   } else if (difficulty === 'medium') {
-    // 15% chance to pick 2nd or 3rd best move
-    if (Math.random() < 0.15 && possibleMoves.length > 2) {
-      chosenMove = possibleMoves[Math.floor(Math.random() * 3)];
+    // 6% chance to pick 2nd best move
+    if (Math.random() < 0.06 && possibleMoves.length > 1) {
+      chosenMove = possibleMoves[1];
     }
   }
 
   const dropDelayMs = {
-    easy: 650 + Math.random() * 300,
-    medium: 400 + Math.random() * 200,
-    hard: 200 + Math.random() * 150,
+    easy: 700 + Math.random() * 350,
+    medium: 240 + Math.random() * 130, // Fast and aggressive builder
+    hard: 130 + Math.random() * 90,
   }[difficulty];
 
   return {

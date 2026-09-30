@@ -25,6 +25,7 @@ export interface FXTriggerMethods {
   addDrillBeam: (x: number, height: number) => void;
   addFloatingText: (text: string, x: number, y: number, color: string) => void;
   triggerScreenShake: (intensity?: number) => void;
+  clearFX: () => void;
 }
 
 interface FXCanvasProps {
@@ -41,6 +42,18 @@ export const FXCanvas: React.FC<FXCanvasProps> = ({ onRegisterTriggers }) => {
 
   // Screen shake ref
   const shakeRef = useRef<{ x: number; y: number; trauma: number }>({ x: 0, y: 0, trauma: 0 });
+
+  const clearFX = useCallback(() => {
+    particlesRef.current = [];
+    shockwavesRef.current = [];
+    drillBeamsRef.current = [];
+    combatTextsRef.current = [];
+    shakeRef.current = { x: 0, y: 0, trauma: 0 };
+    const root = document.getElementById('root');
+    if (root && root.style.transform !== '') {
+      root.style.transform = '';
+    }
+  }, []);
 
   const triggerScreenShake = useCallback((intensity: number = 8) => {
     shakeRef.current.trauma = Math.min(shakeRef.current.trauma + intensity, 25);
@@ -150,8 +163,9 @@ export const FXCanvas: React.FC<FXCanvasProps> = ({ onRegisterTriggers }) => {
       addDrillBeam,
       addFloatingText,
       triggerScreenShake,
+      clearFX,
     });
-  }, [onRegisterTriggers, addSparks, addExplosion, addDrillBeam, addFloatingText, triggerScreenShake]);
+  }, [onRegisterTriggers, addSparks, addExplosion, addDrillBeam, addFloatingText, triggerScreenShake, clearFX]);
 
   // Main Animation Loop
   useEffect(() => {

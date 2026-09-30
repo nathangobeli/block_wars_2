@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GameMode, MatchPlayerMode, AIDifficulty, ViewMode } from '../../types';
 import { GAME_MODES } from '../../constants';
-import { Swords, Flame, Trophy, Activity, Sparkles, User, Users, Cpu, Settings, BookOpen, Volume2, VolumeX, Play } from 'lucide-react';
+import { Swords, Flame, Trophy, Activity, Sparkles, User, Users, Cpu, Settings, BookOpen, Volume2, VolumeX, Play, X, AlertTriangle, RotateCcw } from 'lucide-react';
 
 interface StartMenuProps {
   isOpen: boolean;
+  isGameActive?: boolean;
   selectedMode: GameMode;
   matchMode: MatchPlayerMode;
   aiDifficulty: AIDifficulty;
@@ -14,6 +15,7 @@ interface StartMenuProps {
   scoreAttackLimit: number;
   isMuted: boolean;
   musicEnabled: boolean;
+  onResumeGame?: () => void;
   onSelectMode: (mode: GameMode) => void;
   onSelectMatchMode: (matchMode: MatchPlayerMode) => void;
   onSelectDifficulty: (diff: AIDifficulty) => void;
@@ -30,6 +32,7 @@ interface StartMenuProps {
 
 export const StartMenu: React.FC<StartMenuProps> = ({
   isOpen,
+  isGameActive = false,
   selectedMode,
   matchMode,
   aiDifficulty,
@@ -39,6 +42,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({
   scoreAttackLimit,
   isMuted,
   musicEnabled,
+  onResumeGame,
   onSelectMode,
   onSelectMatchMode,
   onSelectDifficulty,
@@ -52,6 +56,8 @@ export const StartMenu: React.FC<StartMenuProps> = ({
   onOpenSettings,
   onStartGame,
 }) => {
+  const [showConfirmRestart, setShowConfirmRestart] = useState<boolean>(false);
+
   if (!isOpen) return null;
   const getModeIcon = (id: string) => {
     switch (id) {
@@ -77,6 +83,17 @@ export const StartMenu: React.FC<StartMenuProps> = ({
 
       {/* Top Header Actions */}
       <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+        {isGameActive && onResumeGame && (
+          <button
+            onClick={onResumeGame}
+            aria-label="Resume Battle"
+            className="p-2 px-3 rounded-lg bg-cyan-950/90 border border-cyan-400 text-cyan-300 hover:bg-cyan-900 shadow-[0_0_15px_rgba(0,243,255,0.4)] text-xs font-mono font-bold flex items-center gap-1.5 transition-all animate-pulse"
+          >
+            <Play className="w-3.5 h-3.5 fill-cyan-400" />
+            <span>RESUME</span>
+          </button>
+        )}
+
         <button
           onClick={onToggleMusic}
           className={`p-2 rounded-lg border text-xs font-mono flex items-center gap-1.5 transition-all ${
@@ -104,6 +121,16 @@ export const StartMenu: React.FC<StartMenuProps> = ({
         >
           <Settings className="w-4 h-4" />
         </button>
+
+        {isGameActive && onResumeGame && (
+          <button
+            onClick={onResumeGame}
+            aria-label="Close Menu and Resume"
+            className="p-2 rounded-lg bg-slate-900/60 border border-slate-700 hover:border-rose-400 text-slate-400 hover:text-rose-300 transition-all"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       <div className="relative w-full max-w-4xl my-auto flex flex-col items-center z-10">
@@ -314,14 +341,65 @@ export const StartMenu: React.FC<StartMenuProps> = ({
           </div>
         </div>
 
-        {/* Launch Game Button */}
-        <button
-          onClick={onStartGame}
-          className="group relative px-8 py-3.5 rounded-xl font-orbitron font-black text-lg tracking-wider text-slate-900 bg-gradient-to-r from-cyan-400 via-teal-300 to-pink-400 shadow-[0_0_30px_rgba(0,243,255,0.6)] hover:shadow-[0_0_50px_rgba(255,0,127,0.8)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3 cursor-pointer"
-        >
-          <Play className="w-6 h-6 fill-slate-950" />
-          <span>ENGAGE BATTLE</span>
-        </button>
+        {/* Launch / Resume / Restart Actions */}
+        {isGameActive ? (
+          showConfirmRestart ? (
+            <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-slate-950/95 border border-rose-500/70 shadow-[0_0_30px_rgba(244,63,94,0.3)] max-w-md w-full animate-fadeIn">
+              <div className="flex items-center gap-2 text-rose-400 font-orbitron font-bold text-xs uppercase">
+                <AlertTriangle className="w-4 h-4 text-rose-500 animate-pulse" />
+                <span>QUIT CURRENT DUEL & RESTART?</span>
+              </div>
+              <p className="text-xs font-mono text-slate-300 text-center">
+                An active duel is currently paused. Starting a new match will reset all progress and board states.
+              </p>
+              <div className="flex items-center gap-3 w-full justify-center mt-1">
+                <button
+                  onClick={() => {
+                    setShowConfirmRestart(false);
+                    onStartGame();
+                  }}
+                  className="flex-1 py-2.5 px-4 rounded-lg bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white font-orbitron font-bold text-xs tracking-wider transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[0_0_12px_rgba(244,63,94,0.4)]"
+                >
+                  CONFIRM NEW MATCH
+                </button>
+                <button
+                  onClick={() => setShowConfirmRestart(false)}
+                  className="flex-1 py-2.5 px-4 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-orbitron font-bold text-xs tracking-wider transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                >
+                  CANCEL
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-lg justify-center">
+              {onResumeGame && (
+                <button
+                  onClick={onResumeGame}
+                  className="w-full sm:w-auto flex-1 group relative px-7 py-3.5 rounded-xl font-orbitron font-black text-sm sm:text-base tracking-wider text-slate-950 bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-300 shadow-[0_0_30px_rgba(0,243,255,0.6)] hover:shadow-[0_0_50px_rgba(0,243,255,0.8)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer"
+                >
+                  <Play className="w-5 h-5 fill-slate-950" />
+                  <span>RESUME BATTLE</span>
+                </button>
+              )}
+
+              <button
+                onClick={() => setShowConfirmRestart(true)}
+                className="w-full sm:w-auto flex-1 px-6 py-3.5 rounded-xl font-orbitron font-bold text-xs sm:text-sm tracking-wider text-slate-200 bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-pink-500 hover:text-pink-300 shadow-md hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <RotateCcw className="w-4 h-4 text-pink-400" />
+                <span>NEW MATCH</span>
+              </button>
+            </div>
+          )
+        ) : (
+          <button
+            onClick={onStartGame}
+            className="group relative px-8 py-3.5 rounded-xl font-orbitron font-black text-lg tracking-wider text-slate-900 bg-gradient-to-r from-cyan-400 via-teal-300 to-pink-400 shadow-[0_0_30px_rgba(0,243,255,0.6)] hover:shadow-[0_0_50px_rgba(255,0,127,0.8)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3 cursor-pointer"
+          >
+            <Play className="w-6 h-6 fill-slate-950" />
+            <span>ENGAGE BATTLE</span>
+          </button>
+        )}
       </div>
     </div>
   );

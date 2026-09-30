@@ -65,6 +65,19 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   const renderAbilityButton = (player: PlayerState, abilityKey: AbilityType) => {
     const ability = ABILITIES[abilityKey];
     const canUse = player.warMeter >= ability.cost && gameState.isPlaying && !gameState.isGameOver;
+    const isP1 = player.id === 'p1';
+
+    const getHotkey = () => {
+      if (isP1) {
+        if (abilityKey === 'aegis_shield') return 'Q';
+        if (abilityKey === 'plasma_push') return 'E';
+      } else {
+        if (abilityKey === 'plasma_push') return '/';
+      }
+      return null;
+    };
+
+    const hotkey = getHotkey();
 
     const getIcon = () => {
       switch (abilityKey) {
@@ -84,15 +97,20 @@ export const GameHUD: React.FC<GameHUDProps> = ({
         key={abilityKey}
         disabled={!canUse}
         onClick={() => onActivateAbility(player.id, abilityKey)}
-        title={`${ability.name}: ${ability.description}`}
+        title={`${ability.name} (${hotkey ? `Hotkey: ${hotkey} • ` : ''}${ability.cost}% War Meter): ${ability.description}`}
         className={`px-1.5 py-1 rounded text-[10px] font-mono font-bold flex items-center gap-1 transition-all ${
           canUse
-            ? 'bg-amber-500/20 border border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(255,170,0,0.4)] hover:bg-amber-500/40 hover:scale-105 active:scale-95'
-            : 'bg-slate-900/60 border border-slate-800 text-slate-500 opacity-50 cursor-not-allowed'
+            ? 'bg-amber-500/20 border border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(255,170,0,0.4)] hover:bg-amber-500/40 hover:scale-105 active:scale-95 animate-pulse'
+            : 'bg-slate-900/60 border border-slate-800 text-slate-500 opacity-60 cursor-not-allowed'
         }`}
       >
         {getIcon()}
         <span className="hidden sm:inline">{ability.name.split(' ')[0]}</span>
+        {hotkey && (
+          <span className="ml-0.5 px-1 py-0.2 rounded bg-slate-800 text-[8px] text-amber-400 border border-amber-500/30">
+            {hotkey}
+          </span>
+        )}
       </button>
     );
   };
@@ -159,12 +177,16 @@ export const GameHUD: React.FC<GameHUDProps> = ({
             )}
           </div>
 
-          {/* P1 War Meter */}
-          {mode === 'war' && (
+          {/* P1 War Meter (Visible in both War and Versus Duel) */}
+          {(mode === 'war' || mode === 'versus') && (
             <div className="w-full max-w-[170px] mt-1">
               <div className="flex justify-between items-center text-[10px] font-mono text-cyan-400 mb-0.5">
-                <span>WAR METER</span>
-                <span>{p1.warMeter}%</span>
+                <span title="Clear lines to charge War Meter and deploy tactical combat abilities">
+                  WAR METER
+                </span>
+                <span className={p1.warMeter >= 100 ? 'text-amber-400 font-bold animate-pulse' : ''}>
+                  {p1.warMeter}%
+                </span>
               </div>
               <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
                 <div
@@ -178,7 +200,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
               </div>
               {/* P1 Abilities */}
               <div className="flex gap-1 mt-1 flex-wrap">
-                {(['aegis_shield', 'board_push', 'mirage_cloak', 'plasma_push'] as AbilityType[]).map(key =>
+                {(['aegis_shield', 'plasma_push'] as AbilityType[]).map(key =>
                   renderAbilityButton(p1, key)
                 )}
               </div>
@@ -221,12 +243,16 @@ export const GameHUD: React.FC<GameHUDProps> = ({
             )}
           </div>
 
-          {/* P2 War Meter */}
-          {mode === 'war' && (
+          {/* P2 War Meter (Visible in both War and Versus Duel) */}
+          {(mode === 'war' || mode === 'versus') && (
             <div className="w-full max-w-[170px] mt-1">
               <div className="flex justify-between items-center text-[10px] font-mono text-pink-400 mb-0.5">
-                <span>WAR METER</span>
-                <span>{p2.warMeter}%</span>
+                <span title="Clear lines to charge War Meter and deploy tactical combat abilities">
+                  WAR METER
+                </span>
+                <span className={p2.warMeter >= 100 ? 'text-amber-400 font-bold animate-pulse' : ''}>
+                  {p2.warMeter}%
+                </span>
               </div>
               <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
                 <div
@@ -241,7 +267,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
               {/* P2 Abilities */}
               {!p2.isAI && (
                 <div className="flex gap-1 mt-1 justify-end flex-wrap">
-                  {(['aegis_shield', 'board_push', 'mirage_cloak', 'plasma_push'] as AbilityType[]).map(key =>
+                  {(['aegis_shield', 'plasma_push'] as AbilityType[]).map(key =>
                     renderAbilityButton(p2, key)
                   )}
                 </div>

@@ -54,6 +54,16 @@ export interface ActiveWackyEvent {
   icon: string;
 }
 
+export interface BlastEffect {
+  id: string;
+  centerX: number;
+  centerY: number;
+  radius: number; // 1 for 3x3, 3 for 6x6
+  color: string;
+  isGiganto?: boolean;
+  timestamp: number;
+}
+
 export interface PlayerStats {
   score: number;
   linesCleared: number;
@@ -62,6 +72,7 @@ export interface PlayerStats {
   highestCombo: number;
   piecesDropped: number;
   specialBlocksTriggered: number;
+  actionsCount: number;
 }
 
 export interface PlayerState {
@@ -85,6 +96,7 @@ export interface PlayerState {
   stats: PlayerStats;
   dangerFlash: boolean;
   aiThinking: boolean;
+  blastEffects?: BlastEffect[];
 }
 
 export interface GameState {

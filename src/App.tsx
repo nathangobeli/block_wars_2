@@ -27,6 +27,7 @@ export function App() {
     lockInPiece,
     activateAbility,
     togglePause,
+    setGameState,
   } = useGameEngine();
 
   // Menu & Setup Options
@@ -114,14 +115,32 @@ export function App() {
   }, [handleStartGame]);
 
   const handleReturnMenu = useCallback(() => {
+    if (gameState.isPlaying && !gameState.isGameOver) {
+      setGameState(prev => ({ ...prev, isPaused: true }));
+    }
     setIsStartMenuOpen(true);
-  }, []);
+  }, [gameState.isPlaying, gameState.isGameOver, setGameState]);
+
+  const handleResumeFromMenu = useCallback(() => {
+    setIsStartMenuOpen(false);
+    setGameState(prev => ({ ...prev, isPaused: false }));
+  }, [setGameState]);
 
   // Keyboard Event Listeners for Dual Desktop Control
   useEffect(() => {
-    if (!gameState.isPlaying || gameState.isPaused || gameState.isGameOver) return;
+    if (!gameState.isPlaying || gameState.isGameOver) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Quick pause / unpause shortcut works cleanly even when paused
+      if (e.code === 'Escape' || e.code === 'KeyP') {
+        e.preventDefault();
+        togglePause();
+        return;
+      }
+
+      // If paused, suspend all other game inputs
+      if (gameState.isPaused) return;
+
       // Prevent scrolling on arrows/space
       if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
         e.preventDefault();
@@ -146,11 +165,6 @@ export function App() {
         else if (e.code === 'ArrowDown') softDrop('p2');
         else if (e.code === 'Enter' || e.code === 'ShiftRight') lockInPiece('p2');
         else if (e.code === 'Slash' || e.code === 'Period') activateAbility('p2', 'plasma_push');
-      }
-
-      // Quick pause shortcut
-      if (e.code === 'Escape' || e.code === 'KeyP') {
-        togglePause();
       }
     };
 
@@ -246,11 +260,13 @@ export function App() {
             </div>
           )}
 
-          {/* War Energy Bar & Triggers */}
-          {gameState.mode === 'war' && (
+          {/* War Energy Bar & Triggers (Available in both War and Versus Duel) */}
+          {(gameState.mode === 'war' || gameState.mode === 'versus') && (
             <div className="mt-1 pt-1 border-t border-slate-800/80">
               <div className="flex justify-between items-center text-[7px] text-slate-400 mb-0.5">
-                <span className="font-orbitron font-bold">WAR ENERGY</span>
+                <span className="font-orbitron font-bold" title="Clear lines to charge energy for combat abilities">
+                  WAR ENERGY
+                </span>
                 <span className={`font-bold ${player.warMeter >= 100 ? 'text-amber-400 animate-pulse' : textColor}`}>
                   {player.warMeter}%
                 </span>
@@ -269,23 +285,31 @@ export function App() {
                 />
               </div>
 
+              {player.warMeter < 100 && (
+                <div className="text-[6.5px] text-slate-400 font-mono mt-0.5 truncate text-center">
+                  Clear lines to charge • {isP1 ? '[Q] Aegis [E] Plasma' : '[/] Plasma'}
+                </div>
+              )}
+
               {player.warMeter >= 100 && (
                 <div className="grid grid-cols-2 gap-1 mt-1">
                   <button
                     type="button"
                     onClick={() => activateAbility(player.id, 'aegis_shield')}
+                    title="Aegis Shield: Neutralizes next incoming attack [Q]"
                     className="py-0.5 px-0.5 rounded bg-cyan-950 border border-cyan-400 text-cyan-300 text-[7px] font-bold active:scale-95 shadow-[0_0_8px_rgba(0,243,255,0.4)] flex items-center justify-center gap-0.5 cursor-pointer touch-manipulation"
                   >
                     <Shield className="w-2.5 h-2.5 text-cyan-400" />
-                    <span>AEGIS</span>
+                    <span>{isP1 ? '[Q] AEGIS' : 'AEGIS'}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => activateAbility(player.id, 'plasma_push')}
+                    title="Plasma Push: Launches 3 garbage rows to enemy [E]"
                     className="py-0.5 px-0.5 rounded bg-rose-950 border border-rose-400 text-rose-300 text-[7px] font-bold active:scale-95 shadow-[0_0_8px_rgba(244,63,94,0.4)] flex items-center justify-center gap-0.5 cursor-pointer touch-manipulation"
                   >
                     <Zap className="w-2.5 h-2.5 text-rose-400" />
-                    <span>PLASMA</span>
+                    <span>{isP1 ? '[E] PLASMA' : '[/] PLASMA'}</span>
                   </button>
                 </div>
               )}
@@ -386,6 +410,7 @@ export function App() {
             <button
               onClick={handleReturnMenu}
               className="p-1.5 rounded bg-slate-900 border border-slate-700 text-slate-300 hover:text-pink-400"
+              aria-label="Menu"
               title="Menu"
             >
               <Home className="w-3.5 h-3.5" />
@@ -520,6 +545,7 @@ export function App() {
                 <button
                   onClick={handleReturnMenu}
                   className="p-1 rounded-full text-slate-400 hover:text-pink-400 transition-colors"
+                  aria-label="Menu"
                   title="Menu"
                 >
                   <Home className="w-3.5 h-3.5" />
@@ -555,9 +581,46 @@ export function App() {
         </div>
       </footer>
 
+      {/* Centered Neon Pause Overlay */}
+      {gameState.isPaused && gameState.isPlaying && !gameState.isGameOver && !isStartMenuOpen && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+          <div className="relative p-6 sm:p-8 rounded-2xl bg-slate-900/95 border-2 border-cyan-400 shadow-[0_0_50px_rgba(0,243,255,0.4)] text-center flex flex-col items-center max-w-sm w-full">
+            <div className="w-12 h-12 rounded-full bg-cyan-950/80 border border-cyan-400 flex items-center justify-center text-cyan-400 mb-3 shadow-[0_0_15px_#00f3ff]">
+              <Pause className="w-6 h-6 text-cyan-400" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-orbitron font-black tracking-widest text-cyan-400 neon-glow-cyan mb-1.5">
+              PAUSED
+            </h2>
+            <p className="text-xs font-mono text-slate-300 mb-6 tracking-wide">
+              SIMULATION SUSPENDED // AWAITING INPUT
+            </p>
+            <div className="flex flex-col gap-2.5 w-full">
+              <button
+                onClick={togglePause}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-orbitron font-extrabold text-sm tracking-wider shadow-[0_0_20px_rgba(0,243,255,0.4)] flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+              >
+                <Play className="w-4 h-4 fill-slate-950" />
+                <span>RESUME DUEL</span>
+              </button>
+              <button
+                onClick={handleReturnMenu}
+                className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-orbitron font-bold text-xs tracking-wider transition-all hover:scale-105 active:scale-95 cursor-pointer"
+              >
+                QUIT TO MENU
+              </button>
+            </div>
+            <div className="mt-4 text-[10px] font-mono text-slate-400">
+              PRESS <span className="text-cyan-300 font-bold bg-slate-800 px-1 py-0.5 rounded">P</span> OR <span className="text-cyan-300 font-bold bg-slate-800 px-1 py-0.5 rounded">ESC</span> TO RESUME
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modals */}
       <StartMenu
         isOpen={isStartMenuOpen}
+        isGameActive={gameState.isPlaying && !gameState.isGameOver}
+        onResumeGame={handleResumeFromMenu}
         selectedMode={selectedMode}
         matchMode={matchMode}
         aiDifficulty={aiDifficulty}

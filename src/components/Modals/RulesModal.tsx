@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Swords, Flame, Trophy, Activity, Sparkles, Bomb, Zap, Skull, Shield, ArrowDownToLine, EyeOff, Radiation, Keyboard, Smartphone } from 'lucide-react';
+import { X, Swords, Flame, Trophy, Activity, Sparkles, Bomb, Zap, Skull, Shield, ArrowDownToLine, EyeOff, Radiation, Keyboard, Smartphone, AlertTriangle } from 'lucide-react';
 
 interface RulesModalProps {
   isOpen: boolean;
@@ -29,7 +29,7 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         <div className="space-y-6 text-sm">
-          {/* Core Synchronous Mechanism */}
+          {/* Core Synchronous Mechanism & Win Condition */}
           <section className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
             <h3 className="font-orbitron font-bold text-cyan-400 mb-1 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
@@ -39,6 +39,15 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
               Both combatants receive the <strong>EXACT SAME</strong> tetromino sequence each turn. Both players maneuver simultaneously.
               When a player locks in, they enter <em>READY</em> state. Once both players lock in (or the adrenaline blitz timer expires), the turn resolves simultaneously.
             </p>
+
+            {/* Victory / Defeat Condition */}
+            <div className="mt-3 p-3 rounded-lg bg-rose-950/40 border border-rose-500/50 flex items-center gap-2.5 text-rose-300 text-xs sm:text-sm">
+              <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 animate-pulse" />
+              <div>
+                <span className="font-orbitron font-bold text-rose-400 mr-1.5">WIN / LOSE CONDITION:</span>
+                <span>The <strong>first player to top out their 20-row grid loses</strong>. Clear lines to push retaliatory garbage rows onto your opponent's board and force them to top out!</span>
+              </div>
+            </div>
           </section>
 
           {/* Controls Matrix */}

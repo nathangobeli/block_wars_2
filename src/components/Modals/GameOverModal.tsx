@@ -23,6 +23,8 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   onReturnMenu,
 }) => {
   useEffect(() => {
+    let animFrameId: number | null = null;
+
     if (isOpen && winner && winner !== 'tie') {
       const duration = 2.5 * 1000;
       const end = Date.now() + duration;
@@ -44,14 +46,33 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
         });
 
         if (Date.now() < end) {
-          requestAnimationFrame(frame);
+          animFrameId = requestAnimationFrame(frame);
         }
       };
       frame();
+    } else {
+      confetti.reset();
     }
+
+    return () => {
+      if (animFrameId !== null) {
+        cancelAnimationFrame(animFrameId);
+      }
+      confetti.reset();
+    };
   }, [isOpen, winner]);
 
   if (!isOpen) return null;
+
+  const handleRematch = () => {
+    confetti.reset();
+    onRematch();
+  };
+
+  const handleReturnMenu = () => {
+    confetti.reset();
+    onReturnMenu();
+  };
 
   const getWinnerText = () => {
     if (winner === 'tie') return 'STALEMATE // SIMULTANEOUS LOCKOUT';
@@ -66,10 +87,10 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   const seconds = gameState.elapsedTime % 60;
   const formattedDuration = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-  // APM Calculation
-  const minutesPlayed = Math.max(0.1, gameState.elapsedTime / 60);
-  const p1Apm = Math.round((p1.stats.piecesDropped * 4) / minutesPlayed);
-  const p2Apm = Math.round((p2.stats.piecesDropped * 4) / minutesPlayed);
+  // APM Calculation: Measured independently based on actual moves & actions
+  const minutesPlayed = Math.max(0.08, gameState.elapsedTime / 60);
+  const p1Apm = Math.round((p1.stats.actionsCount ?? (p1.stats.piecesDropped * 3.5)) / minutesPlayed);
+  const p2Apm = Math.round((p2.stats.actionsCount ?? (p2.stats.piecesDropped * 3.5)) / minutesPlayed);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-lg">
@@ -159,7 +180,8 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
         {/* Action Buttons */}
         <div className="flex items-center gap-3 w-full justify-center">
           <button
-            onClick={onRematch}
+            onClick={handleRematch}
+            aria-label="Rematch"
             className="flex-1 max-w-[200px] py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-orbitron font-extrabold text-sm tracking-wider shadow-[0_0_20px_rgba(0,243,255,0.4)] flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95"
           >
             <RotateCcw className="w-4 h-4" />
@@ -167,7 +189,8 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
           </button>
 
           <button
-            onClick={onReturnMenu}
+            onClick={handleReturnMenu}
+            aria-label="Main Menu"
             className="flex-1 max-w-[200px] py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-orbitron font-bold text-sm tracking-wider flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95"
           >
             <Home className="w-4 h-4" />
