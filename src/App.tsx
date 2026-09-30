@@ -222,7 +222,7 @@ export function App() {
 
     return (
       <div
-        className={`flex flex-col justify-between h-[clamp(235px,42dvh,395px)] sm:h-[clamp(260px,44dvh,450px)] py-1.5 px-2 rounded-xl bg-slate-950/90 border ${borderColor} ${glow} text-[10px] font-mono w-[170px] sm:w-[195px] min-w-[160px] max-w-[205px] shrink-0 select-none backdrop-blur-sm`}
+        className={`flex flex-col justify-between h-[clamp(215px,37dvh,340px)] sm:h-[clamp(260px,44dvh,450px)] py-1.5 px-2 rounded-xl bg-slate-950/90 border ${borderColor} ${glow} text-[10px] font-mono w-[170px] sm:w-[195px] min-w-[160px] max-w-[205px] shrink-0 select-none backdrop-blur-sm`}
       >
         {/* Top: Score & Telemetry Banner */}
         <div className="w-full">
@@ -354,7 +354,7 @@ export function App() {
 
       {/* Top Cyber Navigation Bar (Only for Arena Split, or Collapsed in Tabletop) */}
       {viewMode === 'arena_split' ? (
-        <header className="relative z-30 w-full px-3 py-1.5 min-h-[44px] pt-[max(env(safe-area-inset-top,0px),48px)] sm:pt-2 border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md flex items-center justify-between">
+        <header className="relative z-30 w-full px-3 py-1.5 min-h-[44px] pt-[max(env(safe-area-inset-top,0px),56px)] sm:pt-2 border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md flex items-center justify-between">
           <div className="flex items-center gap-2">
             <button
               onClick={handleReturnMenu}
@@ -419,13 +419,13 @@ export function App() {
         </header>
       ) : null}
 
-      {/* Main Duel Playing Area - 100% Fit, Zero Scroll */}
-      <main className="relative z-20 flex-1 flex flex-col items-center justify-between p-1 w-full h-full overflow-hidden max-w-4xl mx-auto">
+      {/* Main Duel Playing Area - Anchored firmly to bottom on mobile */}
+      <main className="relative z-20 flex-1 flex flex-col items-center justify-end p-0 sm:p-1 w-full h-full overflow-hidden max-w-4xl mx-auto">
         {/* VIEW MODE 1: ARENA SPLIT (Side-by-Side) */}
         {viewMode === 'arena_split' && (
-          <div className="flex-1 flex flex-col items-center justify-between w-full h-full overflow-hidden">
+          <div className="flex-1 flex flex-col items-center justify-end w-full h-full pb-[max(env(safe-area-inset-bottom,0px),4px)] overflow-hidden">
             {/* Top HUD */}
-            <div className="w-full shrink-0">
+            <div className="w-full shrink-0 mb-auto">
               <GameHUD
                 p1={p1}
                 p2={p2}
@@ -436,10 +436,10 @@ export function App() {
               />
             </div>
 
-            {/* Side-by-side Boards */}
-            <div className="flex-1 flex items-center justify-center gap-1.5 sm:gap-4 w-full my-auto overflow-hidden">
+            {/* Side-by-side Boards - Anchored directly to bottom on mobile */}
+            <div className="flex items-end justify-center gap-1.5 sm:gap-4 w-full mt-auto mb-1 overflow-hidden">
               {/* P1 Board */}
-              <div className="flex flex-col items-center justify-center max-w-[46vw]">
+              <div className="flex flex-col items-center justify-end max-w-[46vw]">
                 <Playfield player={p1} viewMode="arena_split" />
                 <div className="mt-1 block w-full">
                   <VirtualControls
@@ -457,7 +457,7 @@ export function App() {
               </div>
 
               {/* Vertical Laser Divider */}
-              <div className="h-[75%] flex items-center">
+              <div className="h-[80%] flex items-center mb-6">
                 <ClashDivider
                   clashBalance={gameState.clashBalance}
                   orientation="vertical"
@@ -466,7 +466,7 @@ export function App() {
               </div>
 
               {/* P2 Board */}
-              <div className="flex flex-col items-center justify-center max-w-[46vw]">
+              <div className="flex flex-col items-center justify-end max-w-[46vw]">
                 <Playfield player={p2} isOpponent viewMode="arena_split" />
                 {!p2.isAI ? (
                   <div className="mt-1 block w-full">
@@ -483,7 +483,7 @@ export function App() {
                     />
                   </div>
                 ) : (
-                  <div className="mt-1 py-1 text-center text-[10px] font-mono text-slate-500">
+                  <div className="mt-1 py-2 text-center text-[10px] font-mono text-slate-500">
                     // CYBER-AI //
                   </div>
                 )}
@@ -494,10 +494,10 @@ export function App() {
 
         {/* VIEW MODE 2: TABLETOP DUEL (Head-to-Head Clash for 2 Players on Same Phone) */}
         {viewMode === 'tabletop_duel' && (
-          <div className="flex-1 flex flex-col justify-between items-center w-full h-full max-w-md mx-auto pt-[max(env(safe-area-inset-top,0px),54px)] sm:pt-[max(env(safe-area-inset-top,0px),24px)] pb-[max(env(safe-area-inset-bottom,0px),12px)] px-1 sm:px-2 overflow-hidden">
-            {/* --- TOP HALF: PLAYER 2 (Inverted 180° for Opponent, Pushed down toward center) --- */}
-            <div className="rotate-180 flex-1 min-h-0 flex items-start sm:items-center justify-center w-full py-0.5">
-              <div className="flex items-center justify-center gap-1.5 sm:gap-2.5 h-full max-h-full">
+          <div className="flex flex-col justify-end items-center w-full h-full max-w-md mx-auto pt-[max(env(safe-area-inset-top,0px),72px)] sm:pt-4 pb-[max(env(safe-area-inset-bottom,0px),4px)] px-1 sm:px-2 overflow-hidden">
+            {/* --- TOP HALF: PLAYER 2 (Inverted 180° for Opponent, Pushed down toward center clash away from notch) --- */}
+            <div className="rotate-180 flex-1 min-h-0 flex flex-col justify-start items-center w-full py-0.5">
+              <div className="flex items-start justify-center gap-1.5 sm:gap-2.5 w-full">
                 {/* P2 Side Deck on Left (Rotates to P2's Right Hand side!) */}
                 {renderTabletopSideDeck(p2)}
                 {/* P2 Board on Right (Rotates to P2's Left Hand side!) */}
@@ -556,9 +556,9 @@ export function App() {
               <div className="flex-1 h-1.5 bg-gradient-to-r from-cyan-400 to-pink-500 rounded-full shadow-[0_0_8px_#ff007f]" />
             </div>
 
-            {/* --- BOTTOM HALF: PLAYER 1 (Facing Player 1, anchored down toward bottom edge) --- */}
-            <div className="flex-1 min-h-0 flex items-end sm:items-center justify-center w-full py-0.5">
-              <div className="flex items-center justify-center gap-1.5 sm:gap-2.5 h-full max-h-full">
+            {/* --- BOTTOM HALF: PLAYER 1 (Facing Player 1, anchored all the way down to the bottom) --- */}
+            <div className="flex-1 min-h-0 flex flex-col justify-end items-center w-full py-0.5">
+              <div className="flex items-end justify-center gap-1.5 sm:gap-2.5 w-full">
                 {/* P1 Board on Left */}
                 <Playfield compact player={p1} viewMode="tabletop_duel" />
                 {/* P1 Side Deck on Right */}
