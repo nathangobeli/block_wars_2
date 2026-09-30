@@ -108,22 +108,23 @@ export const Playfield: React.FC<PlayfieldProps> = ({
   const isTabletop = viewMode === 'tabletop_duel' || compact;
 
   // Responsive Board Size: exact 1:2 aspect ratio (10 cols : 20 rows)
-  // Tabletop Duel: Fills the player's half of the phone screen with massive 10x20 grid
+  // Tabletop Duel: Dynamically fills 100% of container height with aspect-ratio 10/20
   // Arena Split: Side-by-side vertical arcade view
   const defaultHeightClass = isTabletop
-    ? 'h-[clamp(240px,41.5dvh,405px)] sm:h-[clamp(270px,45dvh,460px)]'
+    ? 'h-full min-h-0'
     : 'h-[clamp(300px,56dvh,560px)] sm:h-[clamp(340px,60vh,600px)] max-w-[45vw]';
 
   const boardHeightClass = customHeightClass || defaultHeightClass;
 
   return (
     <div
-      className={`relative flex flex-col items-center transition-transform duration-300 ${
-        isP2Tabletop ? 'rotate-180' : ''
-      }`}
+      className={`relative flex flex-col items-center justify-center transition-transform duration-300 ${
+        isTabletop ? 'h-full min-h-0' : ''
+      } ${isP2Tabletop ? 'rotate-180' : ''}`}
+      style={isTabletop ? { height: '100%', minHeight: 0 } : undefined}
     >
       {/* Player Header Banner */}
-      <div className={`flex items-center justify-between w-full px-1.5 ${isTabletop ? 'py-0.5 mb-0.5 text-[10px]' : 'py-1 mb-1 text-xs'} font-mono`}>
+      <div className={`shrink-0 flex items-center justify-between w-full px-1.5 ${isTabletop ? 'py-0.5 mb-0.5 text-[10px]' : 'py-1 mb-1 text-xs'} font-mono`}>
         <div className="flex items-center gap-1">
           <div
             className={`w-2 h-2 rounded-full ${
@@ -165,7 +166,10 @@ export const Playfield: React.FC<PlayfieldProps> = ({
       </div>
 
       {/* Main Grid Wrapper with Threat Meter */}
-      <div className={`relative flex items-center ${boardHeightClass}`}>
+      <div
+        className={`relative flex items-center justify-center ${boardHeightClass} ${isTabletop ? 'flex-1 min-h-0' : ''}`}
+        style={isTabletop ? { height: '100%', minHeight: 0 } : undefined}
+      >
         {/* Threat Meter: Glowing Garbage Preview Column */}
         <div className={`relative ${isTabletop ? 'w-2' : 'w-2.5 sm:w-3'} h-full bg-slate-950/80 rounded-l border-y border-l border-slate-800 mr-0.5 overflow-hidden flex flex-col-reverse p-[1px]`}>
           {Array.from({ length: 20 }, (_, idx) => (
@@ -182,10 +186,14 @@ export const Playfield: React.FC<PlayfieldProps> = ({
 
         {/* The 10x20 Playfield Board */}
         <div
-          className={`relative h-full aspect-[1/2] rounded-lg border-2 ${themeBorderColor} ${themeGlow} bg-[#06070B] overflow-hidden ${
+          className={`relative rounded-lg border-2 ${themeBorderColor} ${themeGlow} bg-[#06070B] overflow-hidden ${
             dangerFlash ? 'ring-4 ring-rose-500 ring-opacity-70 animate-pulse' : ''
           }`}
           style={{
+            height: '100%',
+            width: 'auto',
+            objectFit: 'contain',
+            aspectRatio: '10/20',
             display: 'grid',
             gridTemplateRows: `repeat(${GRID_HEIGHT}, minmax(0, 1fr))`,
             gridTemplateColumns: `repeat(${GRID_WIDTH}, minmax(0, 1fr))`,
