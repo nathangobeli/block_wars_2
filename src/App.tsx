@@ -222,8 +222,15 @@ export function App() {
 
     return (
       <div
-        className={`flex flex-col justify-between h-full min-h-0 py-1 sm:py-1.5 px-2 rounded-xl bg-slate-950/90 border ${borderColor} ${glow} text-[10px] font-mono w-[clamp(160px,42vw,195px)] min-w-[155px] max-w-[205px] shrink-0 select-none backdrop-blur-sm`}
-        style={{ height: '100%', minHeight: 0 }}
+        className={`rounded-xl bg-slate-950/90 border ${borderColor} ${glow} text-[10px] font-mono py-1 sm:py-1.5 px-1.5 sm:px-2 select-none backdrop-blur-sm overflow-hidden`}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          height: '100%',
+          flex: '1 1 0',
+          minWidth: 0,
+        }}
       >
         {/* Top: Score & Telemetry Banner */}
         <div className="w-full shrink-0">
@@ -319,7 +326,16 @@ export function App() {
         </div>
 
         {/* Bottom: Ergonomic Side-Pad Game Controls */}
-        <div className="w-full flex-1 min-h-0 flex flex-col mt-0.5" style={{ height: '100%', minHeight: 0 }}>
+        <div
+          className="w-full min-h-0 mt-0.5"
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'stretch',
+            minHeight: 0,
+          }}
+        >
           {!player.isAI ? (
             <VirtualControls
               layout="side-pad"
@@ -333,7 +349,7 @@ export function App() {
               disabled={player.isReady || !gameState.isPlaying || gameState.isPaused}
             />
           ) : (
-            <div className="py-4 text-center my-auto">
+            <div className="py-4 text-center my-auto flex-1 flex flex-col items-center justify-center">
               <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-[9px] font-mono text-pink-400">
                 <div className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-ping" />
                 <span>AI RUNNING</span>
@@ -507,11 +523,19 @@ export function App() {
               className="rotate-180 flex items-center justify-center py-0.5"
               style={{ flex: '1 1 0%', minHeight: 0, display: 'flex', width: '100%' }}
             >
-              <div className="flex items-center justify-center gap-1.5 sm:gap-2.5 w-full h-full min-h-0">
+              <div
+                className="flex items-center justify-between gap-1.5 sm:gap-2 w-full h-full min-h-0"
+                style={{ display: 'flex', flexDirection: 'row', height: '100%' }}
+              >
                 {/* P2 Side Deck on Left (Rotates to P2's Right Hand side!) */}
                 {renderTabletopSideDeck(p2)}
                 {/* P2 Board on Right (Rotates to P2's Left Hand side!) */}
-                <Playfield compact player={p2} isOpponent viewMode="tabletop_duel" />
+                <div
+                  className="h-full flex items-center justify-center"
+                  style={{ flex: '0 0 auto', height: '100%', maxWidth: '58vw' }}
+                >
+                  <Playfield compact player={p2} isOpponent viewMode="tabletop_duel" />
+                </div>
               </div>
             </div>
 
@@ -574,9 +598,17 @@ export function App() {
               className="flex items-center justify-center py-0.5"
               style={{ flex: '1 1 0%', minHeight: 0, display: 'flex', width: '100%' }}
             >
-              <div className="flex items-center justify-center gap-1.5 sm:gap-2.5 w-full h-full min-h-0">
+              <div
+                className="flex items-center justify-between gap-1.5 sm:gap-2 w-full h-full min-h-0"
+                style={{ display: 'flex', flexDirection: 'row', height: '100%' }}
+              >
                 {/* P1 Board on Left */}
-                <Playfield compact player={p1} viewMode="tabletop_duel" />
+                <div
+                  className="h-full flex items-center justify-center"
+                  style={{ flex: '0 0 auto', height: '100%', maxWidth: '58vw' }}
+                >
+                  <Playfield compact player={p1} viewMode="tabletop_duel" />
+                </div>
                 {/* P1 Side Deck on Right */}
                 {renderTabletopSideDeck(p1)}
               </div>

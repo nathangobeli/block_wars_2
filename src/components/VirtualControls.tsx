@@ -51,16 +51,26 @@ export const VirtualControls: React.FC<VirtualControlsProps> = ({
   if (layout === 'side-pad') {
     return (
       <div
-        className="flex-1 min-h-0 flex flex-col justify-between gap-1 sm:gap-1.5 w-full select-none touch-none mt-0.5"
-        style={{ height: '100%', minHeight: 0 }}
+        className="w-full select-none touch-none gap-1 sm:gap-1.5"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          height: '100%',
+          flex: 1,
+          minHeight: 0,
+        }}
       >
         {/* Row 1: Steering (Left, Rotate, Right) */}
-        <div className="grid grid-cols-3 gap-1 sm:gap-1.5 w-full min-h-0" style={{ flex: '1 1 0%' }}>
+        <div
+          className="grid grid-cols-3 gap-1 sm:gap-1.5 w-full min-h-0"
+          style={{ flex: 1, display: 'flex', flexDirection: 'row', justifyContent: 'stretch' }}
+        >
           <button
             type="button"
             disabled={disabled}
             onClick={() => handleAction(onMoveLeft, 12)}
-            className={`w-full h-full min-h-[28px] rounded-xl border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 active:bg-opacity-90 disabled:opacity-30 shadow-md touch-manipulation cursor-pointer p-1`}
+            className={`flex-1 w-full h-full min-h-0 rounded-xl border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 active:bg-opacity-90 disabled:opacity-30 shadow-md touch-manipulation cursor-pointer p-1`}
             aria-label="Move Left"
           >
             <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -70,7 +80,7 @@ export const VirtualControls: React.FC<VirtualControlsProps> = ({
             type="button"
             disabled={disabled}
             onClick={() => handleAction(onRotate, 20)}
-            className={`w-full h-full min-h-[28px] rounded-xl border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 active:bg-opacity-90 disabled:opacity-30 shadow-md touch-manipulation cursor-pointer p-1`}
+            className={`flex-1 w-full h-full min-h-0 rounded-xl border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 active:bg-opacity-90 disabled:opacity-30 shadow-md touch-manipulation cursor-pointer p-1`}
             aria-label="Rotate"
           >
             <RotateCw className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -80,7 +90,7 @@ export const VirtualControls: React.FC<VirtualControlsProps> = ({
             type="button"
             disabled={disabled}
             onClick={() => handleAction(onMoveRight, 12)}
-            className={`w-full h-full min-h-[28px] rounded-xl border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 active:bg-opacity-90 disabled:opacity-30 shadow-md touch-manipulation cursor-pointer p-1`}
+            className={`flex-1 w-full h-full min-h-0 rounded-xl border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center font-bold transition-all active:scale-90 active:bg-opacity-90 disabled:opacity-30 shadow-md touch-manipulation cursor-pointer p-1`}
             aria-label="Move Right"
           >
             <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -88,34 +98,42 @@ export const VirtualControls: React.FC<VirtualControlsProps> = ({
         </div>
 
         {/* Row 2: Soft Drop */}
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={() => handleAction(onDrop, 25)}
-          style={{ flex: '1 1 0%' }}
-          className={`w-full h-full min-h-[28px] rounded-xl border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center gap-1.5 font-mono text-[10px] sm:text-[11px] font-bold tracking-wider transition-all active:scale-95 active:bg-opacity-90 disabled:opacity-30 shadow-sm touch-manipulation cursor-pointer p-1`}
-          aria-label="Soft Drop"
+        <div
+          className="w-full min-h-0"
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'stretch' }}
         >
-          <ArrowDown className="w-4 h-4" />
-          <span>SOFT DROP</span>
-        </button>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => handleAction(onDrop, 25)}
+            className={`w-full h-full flex-1 min-h-0 rounded-xl border ${borderCol} ${bgCol} ${textCol} ${glow} flex items-center justify-center gap-1.5 font-mono text-[10px] sm:text-[11px] font-bold tracking-wider transition-all active:scale-95 active:bg-opacity-90 disabled:opacity-30 shadow-sm touch-manipulation cursor-pointer p-1`}
+            aria-label="Soft Drop"
+          >
+            <ArrowDown className="w-4 h-4" />
+            <span>SOFT DROP</span>
+          </button>
+        </div>
 
         {/* Row 3: Hard Drop / Lock-In Slam Bar */}
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={() => handleAction(onHardDrop, 35)}
-          style={{ flex: '1 1 0%' }}
-          className={`w-full h-full min-h-[30px] rounded-xl border-2 ${
-            isCyan
-              ? 'border-cyan-400 bg-cyan-950/80 text-cyan-300 shadow-[0_0_15px_rgba(0,243,255,0.4)]'
-              : 'border-pink-400 bg-pink-950/80 text-pink-300 shadow-[0_0_15px_rgba(255,0,127,0.4)]'
-          } flex items-center justify-center gap-2 font-orbitron text-xs sm:text-sm font-extrabold tracking-wider transition-all active:scale-95 disabled:opacity-30 shadow-md touch-manipulation cursor-pointer p-1`}
-          aria-label="Hard Drop / Lock"
+        <div
+          className="w-full min-h-0"
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'stretch' }}
         >
-          <ChevronsDown className="w-5 h-5" />
-          <span>LOCK IN</span>
-        </button>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => handleAction(onHardDrop, 35)}
+            className={`w-full h-full flex-1 min-h-0 rounded-xl border-2 ${
+              isCyan
+                ? 'border-cyan-400 bg-cyan-950/80 text-cyan-300 shadow-[0_0_15px_rgba(0,243,255,0.4)]'
+                : 'border-pink-400 bg-pink-950/80 text-pink-300 shadow-[0_0_15px_rgba(255,0,127,0.4)]'
+            } flex items-center justify-center gap-2 font-orbitron text-xs sm:text-sm font-extrabold tracking-wider transition-all active:scale-95 disabled:opacity-30 shadow-md touch-manipulation cursor-pointer p-1`}
+            aria-label="Hard Drop / Lock"
+          >
+            <ChevronsDown className="w-5 h-5" />
+            <span>LOCK IN</span>
+          </button>
+        </div>
       </div>
     );
   }

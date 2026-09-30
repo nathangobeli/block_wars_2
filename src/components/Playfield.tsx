@@ -121,7 +121,7 @@ export const Playfield: React.FC<PlayfieldProps> = ({
       className={`relative flex flex-col items-center justify-center transition-transform duration-300 ${
         isTabletop ? 'h-full min-h-0' : ''
       } ${isP2Tabletop ? 'rotate-180' : ''}`}
-      style={isTabletop ? { height: '100%', minHeight: 0 } : undefined}
+      style={isTabletop ? { flex: '0 0 auto', height: '100%', maxWidth: '58vw', minHeight: 0 } : undefined}
     >
       {/* Player Header Banner */}
       <div className={`shrink-0 flex items-center justify-between w-full px-1.5 ${isTabletop ? 'py-0.5 mb-0.5 text-[10px]' : 'py-1 mb-1 text-xs'} font-mono`}>
@@ -167,8 +167,19 @@ export const Playfield: React.FC<PlayfieldProps> = ({
 
       {/* Main Grid Wrapper with Threat Meter */}
       <div
-        className={`relative flex items-center justify-center ${boardHeightClass} ${isTabletop ? 'flex-1 min-h-0' : ''}`}
-        style={isTabletop ? { height: '100%', minHeight: 0 } : undefined}
+        className={`relative ${boardHeightClass} ${isTabletop ? 'flex-1 min-h-0' : ''}`}
+        style={
+          isTabletop
+            ? {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                width: '100%',
+                minHeight: 0,
+              }
+            : undefined
+        }
       >
         {/* Threat Meter: Glowing Garbage Preview Column */}
         <div className={`relative ${isTabletop ? 'w-2' : 'w-2.5 sm:w-3'} h-full bg-slate-950/80 rounded-l border-y border-l border-slate-800 mr-0.5 overflow-hidden flex flex-col-reverse p-[1px]`}>
@@ -191,9 +202,11 @@ export const Playfield: React.FC<PlayfieldProps> = ({
           }`}
           style={{
             height: '100%',
+            maxHeight: '100%',
             width: 'auto',
+            maxWidth: '100%',
+            aspectRatio: '10 / 20',
             objectFit: 'contain',
-            aspectRatio: '10/20',
             display: 'grid',
             gridTemplateRows: `repeat(${GRID_HEIGHT}, minmax(0, 1fr))`,
             gridTemplateColumns: `repeat(${GRID_WIDTH}, minmax(0, 1fr))`,
