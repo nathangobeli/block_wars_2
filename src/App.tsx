@@ -222,7 +222,7 @@ export function App() {
 
     return (
       <div
-        className={`flex flex-col justify-between h-[clamp(215px,37dvh,340px)] sm:h-[clamp(260px,44dvh,450px)] py-1.5 px-2 rounded-xl bg-slate-950/90 border ${borderColor} ${glow} text-[10px] font-mono w-[170px] sm:w-[195px] min-w-[160px] max-w-[205px] shrink-0 select-none backdrop-blur-sm`}
+        className={`flex flex-col justify-between h-[clamp(240px,41.5dvh,405px)] sm:h-[clamp(270px,45dvh,460px)] py-1.5 px-2 rounded-xl bg-slate-950/90 border ${borderColor} ${glow} text-[10px] font-mono w-[clamp(160px,42vw,195px)] min-w-[155px] max-w-[205px] shrink-0 select-none backdrop-blur-sm`}
       >
         {/* Top: Score & Telemetry Banner */}
         <div className="w-full">
@@ -494,10 +494,10 @@ export function App() {
 
         {/* VIEW MODE 2: TABLETOP DUEL (Head-to-Head Clash for 2 Players on Same Phone) */}
         {viewMode === 'tabletop_duel' && (
-          <div className="flex flex-col justify-end items-center w-full h-full max-w-md mx-auto pt-[max(env(safe-area-inset-top,0px),72px)] sm:pt-4 pb-[max(env(safe-area-inset-bottom,0px),4px)] px-1 sm:px-2 overflow-hidden">
-            {/* --- TOP HALF: PLAYER 2 (Inverted 180° for Opponent, Pushed down toward center clash away from notch) --- */}
-            <div className="rotate-180 flex-1 min-h-0 flex flex-col justify-start items-center w-full py-0.5">
-              <div className="flex items-start justify-center gap-1.5 sm:gap-2.5 w-full">
+          <div className="flex flex-col justify-between items-center w-full h-full max-w-md mx-auto pt-[max(env(safe-area-inset-top,0px),64px)] sm:pt-4 pb-[max(env(safe-area-inset-bottom,0px),8px)] px-1 sm:px-2 overflow-hidden">
+            {/* --- TOP HALF: PLAYER 2 (Inverted 180° for Opponent, balanced and filling space) --- */}
+            <div className="rotate-180 flex-1 min-h-0 flex flex-col justify-center items-center w-full py-0.5">
+              <div className="flex items-center justify-center gap-1.5 sm:gap-2.5 w-full">
                 {/* P2 Side Deck on Left (Rotates to P2's Right Hand side!) */}
                 {renderTabletopSideDeck(p2)}
                 {/* P2 Board on Right (Rotates to P2's Left Hand side!) */}
@@ -556,9 +556,9 @@ export function App() {
               <div className="flex-1 h-1.5 bg-gradient-to-r from-cyan-400 to-pink-500 rounded-full shadow-[0_0_8px_#ff007f]" />
             </div>
 
-            {/* --- BOTTOM HALF: PLAYER 1 (Facing Player 1, anchored all the way down to the bottom) --- */}
-            <div className="flex-1 min-h-0 flex flex-col justify-end items-center w-full py-0.5">
-              <div className="flex items-end justify-center gap-1.5 sm:gap-2.5 w-full">
+            {/* --- BOTTOM HALF: PLAYER 1 (Facing Player 1, balanced and filling space all the way down) --- */}
+            <div className="flex-1 min-h-0 flex flex-col justify-center items-center w-full py-0.5">
+              <div className="flex items-center justify-center gap-1.5 sm:gap-2.5 w-full">
                 {/* P1 Board on Left */}
                 <Playfield compact player={p1} viewMode="tabletop_duel" />
                 {/* P1 Side Deck on Right */}
