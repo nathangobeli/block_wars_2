@@ -461,7 +461,7 @@ export function App() {
       ) : null}
 
       {/* Main Duel Playing Area */}
-      <main className="relative z-20 flex-1 min-h-0 flex flex-col items-center justify-center p-0 w-full h-full overflow-hidden max-w-4xl mx-auto">
+      <main className="relative z-20 flex-1 min-h-0 flex flex-col items-center justify-end p-0 w-full h-full overflow-hidden max-w-4xl mx-auto">
         {/* VIEW MODE 1: ARENA SPLIT (Side-by-Side) */}
         {viewMode === 'arena_split' && (
           <div className="flex-1 flex flex-col items-center justify-end w-full h-full pb-[max(env(safe-area-inset-bottom,0px),4px)] overflow-hidden">
@@ -536,25 +536,24 @@ export function App() {
         {/* VIEW MODE 2: TABLETOP DUEL (Head-to-Head Clash for 2 Players on Same Phone) */}
         {viewMode === 'tabletop_duel' && (
           <div 
-            className="w-full h-full max-w-md mx-auto px-1 sm:px-2"
+            className="w-full max-w-md mx-auto px-1 sm:px-2 flex flex-col justify-end"
             style={{ 
               display: 'flex', 
               flexDirection: 'column', 
               justifyContent: 'flex-end', 
-              height: '100%', 
               width: '100%', 
               overflow: 'hidden' 
             }}
           >
             {/* --- TOP HALF: PLAYER 2 (Inverted 180° for Opponent) --- */}
             <div
-              className="rotate-180 flex items-center justify-center py-0.5"
+              className="rotate-180 w-full flex items-center justify-center py-0.5"
               style={{
-                flex: '1 1 0',
-                minHeight: 0,
-                height: '100%',
+                flex: '0 0 auto',
+                height: 'clamp(280px, calc((100dvh - 56px - env(safe-area-inset-bottom, 0px)) / 2), 360px)',
                 width: '100%',
                 display: 'flex',
+                boxSizing: 'border-box',
               }}
             >
               <div
@@ -575,7 +574,7 @@ export function App() {
 
             {/* --- CENTER CLASH DIVIDER & SYNCHRO INFORMATION HUB --- */}
             <div
-              className="relative w-full flex items-center justify-between px-2 shrink-0"
+              className="relative w-full flex items-center justify-between px-2 my-1 shrink-0"
               style={{ flex: '0 0 36px', height: '36px', zIndex: 10 }}
             >
               {/* Left Plasma Laser */}
@@ -623,15 +622,15 @@ export function App() {
 
             {/* --- BOTTOM HALF: PLAYER 1 (Facing Player 1) --- */}
             <div
-              className="flex items-center justify-center py-0.5"
+              className="w-full flex items-center justify-center py-0.5"
               style={{
-                flex: '1 1 0',
-                minHeight: 0,
-                height: '100%',
+                flex: '0 0 auto',
+                height: 'clamp(280px, calc((100dvh - 56px - env(safe-area-inset-bottom, 0px)) / 2), 360px)',
                 width: '100%',
                 paddingBottom: 'max(8px, env(safe-area-inset-bottom, 0px))',
                 marginBottom: 0,
                 display: 'flex',
+                boxSizing: 'border-box',
               }}
             >
               <div
@@ -654,16 +653,18 @@ export function App() {
       </main>
 
       {/* Footer (Only rendered on desktop / larger screens to save mobile height) */}
-      <footer className="hidden sm:flex relative z-20 w-full px-4 py-1 border-t border-slate-900 bg-slate-950/80 text-[10px] font-mono text-slate-500 items-center justify-between">
-        <div>
-          <span>SYNCHROBLOCK DUEL // PROTOCOL: {gameState.mode.toUpperCase()}</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span>P1: [W/A/S/D + SPACE]</span>
-          <span className="hidden md:inline">P2: [ARROWS + ENTER]</span>
-          <span className="text-cyan-400 font-bold">ZERO SCROLL // 100% VIEWPORT</span>
-        </div>
-      </footer>
+      {viewMode === 'arena_split' && (
+        <footer className="hidden sm:flex relative z-20 w-full px-4 py-1 border-t border-slate-900 bg-slate-950/80 text-[10px] font-mono text-slate-500 items-center justify-between">
+          <div>
+            <span>SYNCHROBLOCK DUEL // PROTOCOL: {gameState.mode.toUpperCase()}</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span>P1: [W/A/S/D + SPACE]</span>
+            <span className="hidden md:inline">P2: [ARROWS + ENTER]</span>
+            <span className="text-cyan-400 font-bold">ZERO SCROLL // 100% VIEWPORT</span>
+          </div>
+        </footer>
+      )}
 
       {/* Centered Neon Pause Overlay */}
       {gameState.isPaused && gameState.isPlaying && !gameState.isGameOver && !isStartMenuOpen && (
