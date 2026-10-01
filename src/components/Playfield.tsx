@@ -123,7 +123,7 @@ export const Playfield: React.FC<PlayfieldProps> = ({
       } ${isP2Tabletop ? 'rotate-180' : ''}`}
       style={
         isTabletop
-          ? { flex: '1 1 0', height: '100%', width: '100%', minHeight: 0, overflow: 'hidden' }
+          ? { height: '100%', minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center' }
           : undefined
       }
     >

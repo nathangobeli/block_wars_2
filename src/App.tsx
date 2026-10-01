@@ -233,10 +233,10 @@ export function App() {
           minHeight: 0,
         }}
       >
-        {/* Top: Score & Telemetry Banner */}
-        <div className="w-full shrink-0">
+        {/* Top: Score, Next Piece Queue & Telemetry Banner */}
+        <div className="w-full shrink-0" style={{ flex: '0 0 auto' }}>
           <div className="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-800">
-            <div className="flex items-center gap-1 truncate max-w-[110px]">
+            <div className="flex items-center gap-1 truncate max-w-[100px]">
               <div className={`w-1.5 h-1.5 rounded-full ${isP1 ? 'bg-cyan-400 shadow-[0_0_6px_#00f3ff]' : 'bg-pink-500 shadow-[0_0_6px_#ff007f]'}`} />
               <span className={`px-1 py-0.2 rounded text-[8px] font-orbitron font-bold uppercase truncate ${bgHeader}`}>
                 {player.name}
@@ -247,20 +247,27 @@ export function App() {
             </span>
           </div>
 
-          <div className="flex items-baseline justify-between mb-0.5">
-            <span className="text-[7px] font-orbitron text-slate-400 uppercase tracking-wider">SCORE</span>
-            <span className={`font-orbitron font-extrabold text-sm sm:text-base ${textColor} tracking-tight leading-none truncate`}>
-              {player.score.toLocaleString()}
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between text-[8px] text-slate-400">
-            <span>LINES: <strong className="text-slate-200">{player.lines}</strong></span>
-            {player.combo > 1 && (
-              <span className="text-amber-300 font-bold bg-amber-950/80 border border-amber-500/50 px-1 py-0.2 rounded text-[7px] animate-pulse">
-                🔥 x{player.combo}
+          <div className="flex items-center justify-between gap-1 mb-0.5">
+            <div className="flex flex-col min-w-0">
+              <span className="text-[7px] font-orbitron text-slate-400 uppercase tracking-wider">SCORE</span>
+              <span className={`font-orbitron font-extrabold text-sm sm:text-base ${textColor} tracking-tight leading-none truncate`}>
+                {player.score.toLocaleString()}
               </span>
-            )}
+              <div className="flex items-center gap-1 text-[8px] text-slate-400 mt-0.5">
+                <span>LINES: <strong className="text-slate-200">{player.lines}</strong></span>
+                {player.combo > 1 && (
+                  <span className="text-amber-300 font-bold bg-amber-950/80 border border-amber-500/50 px-1 py-0.2 rounded text-[7px] animate-pulse">
+                    🔥 x{player.combo}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Next Piece Queue directly in Player Command Deck */}
+            <div className="flex flex-col items-center bg-slate-900/90 border border-slate-800 px-1.5 py-0.5 rounded shadow-inner shrink-0">
+              <span className="text-[7px] font-orbitron font-bold text-slate-400 mb-0.5">NEXT</span>
+              {renderMiniNext(gameState.nextPiece)}
+            </div>
           </div>
 
           {player.pendingGarbage > 0 && (
@@ -330,10 +337,11 @@ export function App() {
         <div
           className="w-full min-h-0 mt-0.5"
           style={{
-            flex: 1,
+            flex: '1 1 auto',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'stretch',
+            height: '100%',
             minHeight: 0,
           }}
         >
@@ -364,10 +372,16 @@ export function App() {
 
   return (
     <div
-      className="fixed inset-0 w-full h-full m-0 p-0 overflow-hidden flex flex-col bg-[#08090E] text-slate-100 select-none touch-none"
+      className="fixed inset-0 w-full h-full m-0 p-0 overflow-hidden flex flex-col justify-end bg-[#08090E] text-slate-100 select-none touch-none"
       style={{
-        paddingTop: 'env(safe-area-inset-top, 0px)',
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        position: 'fixed',
+        inset: 0,
+        width: '100vw',
+        height: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        overflow: 'hidden',
         paddingLeft: 'env(safe-area-inset-left, 0px)',
         paddingRight: 'env(safe-area-inset-right, 0px)',
         boxSizing: 'border-box'
@@ -526,16 +540,22 @@ export function App() {
             style={{ 
               display: 'flex', 
               flexDirection: 'column', 
+              justifyContent: 'flex-end', 
               height: '100%', 
               width: '100%', 
-              justifyContent: 'space-between', 
               overflow: 'hidden' 
             }}
           >
             {/* --- TOP HALF: PLAYER 2 (Inverted 180° for Opponent) --- */}
             <div
               className="rotate-180 flex items-center justify-center py-0.5"
-              style={{ flex: '1 1 0', minHeight: 0, height: '100%', width: '100%' }}
+              style={{
+                flex: '1 1 0',
+                minHeight: 0,
+                height: '100%',
+                width: '100%',
+                display: 'flex',
+              }}
             >
               <div
                 className="flex gap-1.5 sm:gap-2 w-full h-full min-h-0"
@@ -546,7 +566,7 @@ export function App() {
                 {/* P2 Board on Right (Rotates to P2's Left Hand side!) */}
                 <div
                   className="h-full flex items-center justify-center min-w-0"
-                  style={{ flex: '0 0 auto', height: '100%', maxWidth: '58vw' }}
+                  style={{ flex: '0 0 auto', height: '100%' }}
                 >
                   <Playfield compact player={p2} isOpponent viewMode="tabletop_duel" />
                 </div>
@@ -555,14 +575,14 @@ export function App() {
 
             {/* --- CENTER CLASH DIVIDER & SYNCHRO INFORMATION HUB --- */}
             <div
-              className="relative w-full flex items-center justify-between px-2 my-0.5 shrink-0 h-8 sm:h-9"
-              style={{ flex: '0 0 auto', zIndex: 10 }}
+              className="relative w-full flex items-center justify-between px-2 shrink-0"
+              style={{ flex: '0 0 36px', height: '36px', zIndex: 10 }}
             >
               {/* Left Plasma Laser */}
-              <div className="flex-1 h-1.5 bg-gradient-to-r from-pink-500 to-cyan-400 rounded-full shadow-[0_0_8px_#00f3ff]" />
+              <div className="flex-1 h-1 bg-gradient-to-r from-pink-500 to-cyan-400 rounded-full shadow-[0_0_8px_#00f3ff]" />
 
-              {/* Center Synchro Preview & Controls Capsule */}
-              <div className="mx-2 px-2.5 py-0.5 rounded-full bg-slate-950/95 border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center gap-2">
+              {/* Center Controls Capsule */}
+              <div className="mx-2 px-3 py-1 rounded-full bg-slate-950/95 border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center gap-2">
                 {/* Floating Fast Utilities */}
                 <button
                   onClick={togglePause}
@@ -571,12 +591,6 @@ export function App() {
                 >
                   {gameState.isPaused ? <Play className="w-3.5 h-3.5 text-cyan-400" /> : <Pause className="w-3.5 h-3.5" />}
                 </button>
-
-                {/* Synchro Next Piece Preview */}
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[8px] font-orbitron font-bold text-slate-400">NEXT:</span>
-                  {renderMiniNext(gameState.nextPiece)}
-                </div>
 
                 {/* Blitz Countdown */}
                 {gameState.blitzTimerEnabled && (
@@ -604,13 +618,21 @@ export function App() {
               </div>
 
               {/* Right Plasma Laser */}
-              <div className="flex-1 h-1.5 bg-gradient-to-r from-cyan-400 to-pink-500 rounded-full shadow-[0_0_8px_#ff007f]" />
+              <div className="flex-1 h-1 bg-gradient-to-r from-cyan-400 to-pink-500 rounded-full shadow-[0_0_8px_#ff007f]" />
             </div>
 
             {/* --- BOTTOM HALF: PLAYER 1 (Facing Player 1) --- */}
             <div
               className="flex items-center justify-center py-0.5"
-              style={{ flex: '1 1 0', minHeight: 0, height: '100%', width: '100%' }}
+              style={{
+                flex: '1 1 0',
+                minHeight: 0,
+                height: '100%',
+                width: '100%',
+                paddingBottom: 'max(8px, env(safe-area-inset-bottom, 0px))',
+                marginBottom: 0,
+                display: 'flex',
+              }}
             >
               <div
                 className="flex gap-1.5 sm:gap-2 w-full h-full min-h-0"
@@ -619,7 +641,7 @@ export function App() {
                 {/* P1 Board on Left */}
                 <div
                   className="h-full flex items-center justify-center min-w-0"
-                  style={{ flex: '0 0 auto', height: '100%', maxWidth: '58vw' }}
+                  style={{ flex: '0 0 auto', height: '100%' }}
                 >
                   <Playfield compact player={p1} viewMode="tabletop_duel" />
                 </div>

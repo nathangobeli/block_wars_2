@@ -57,14 +57,21 @@ export const VirtualControls: React.FC<VirtualControlsProps> = ({
           flexDirection: 'column',
           justifyContent: 'space-between',
           height: '100%',
-          flex: 1,
+          flex: '1 1 auto',
           minHeight: 0,
         }}
       >
         {/* Row 1: Steering (Left, Rotate, Right) */}
         <div
-          className="grid grid-cols-3 gap-1 sm:gap-1.5 w-full min-h-0"
-          style={{ flex: 1, display: 'flex', flexDirection: 'row', justifyContent: 'stretch' }}
+          className="gap-1 sm:gap-1.5 w-full min-h-0"
+          style={{
+            flex: '1 1 auto',
+            minHeight: '52px',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'stretch',
+          }}
         >
           <button
             type="button"
@@ -100,7 +107,14 @@ export const VirtualControls: React.FC<VirtualControlsProps> = ({
         {/* Row 2: Soft Drop */}
         <div
           className="w-full min-h-0"
-          style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'stretch' }}
+          style={{
+            flex: '1 1 auto',
+            minHeight: '48px',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'stretch',
+          }}
         >
           <button
             type="button"
@@ -117,7 +131,14 @@ export const VirtualControls: React.FC<VirtualControlsProps> = ({
         {/* Row 3: Hard Drop / Lock-In Slam Bar */}
         <div
           className="w-full min-h-0"
-          style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'stretch' }}
+          style={{
+            flex: '1.2 1 auto',
+            minHeight: '56px',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'stretch',
+          }}
         >
           <button
             type="button"
