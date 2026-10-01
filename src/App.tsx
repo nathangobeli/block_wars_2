@@ -230,6 +230,7 @@ export function App() {
           height: '100%',
           flex: '1 1 0',
           minWidth: 0,
+          minHeight: 0,
         }}
       >
         {/* Top: Score & Telemetry Banner */}
@@ -363,10 +364,13 @@ export function App() {
 
   return (
     <div
-      className="relative h-[100dvh] w-[100vw] m-0 p-0 overflow-hidden flex flex-col bg-[#08090E] text-slate-100 select-none touch-none"
+      className="fixed inset-0 w-full h-full m-0 p-0 overflow-hidden flex flex-col bg-[#08090E] text-slate-100 select-none touch-none"
       style={{
         paddingTop: 'env(safe-area-inset-top, 0px)',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        paddingLeft: 'env(safe-area-inset-left, 0px)',
+        paddingRight: 'env(safe-area-inset-right, 0px)',
+        boxSizing: 'border-box'
       }}
     >
       {/* Perspective Cyber Grid Background */}
@@ -517,21 +521,31 @@ export function App() {
 
         {/* VIEW MODE 2: TABLETOP DUEL (Head-to-Head Clash for 2 Players on Same Phone) */}
         {viewMode === 'tabletop_duel' && (
-          <div className="flex flex-col justify-between items-center w-full h-full min-h-0 max-w-md mx-auto px-1 sm:px-2 overflow-hidden">
+          <div 
+            className="w-full h-full max-w-md mx-auto px-1 sm:px-2"
+            style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              height: '100%', 
+              width: '100%', 
+              justifyContent: 'space-between', 
+              overflow: 'hidden' 
+            }}
+          >
             {/* --- TOP HALF: PLAYER 2 (Inverted 180° for Opponent) --- */}
             <div
               className="rotate-180 flex items-center justify-center py-0.5"
-              style={{ flex: '1 1 0%', minHeight: 0, display: 'flex', width: '100%' }}
+              style={{ flex: '1 1 0', minHeight: 0, height: '100%', width: '100%' }}
             >
               <div
-                className="flex items-center justify-between gap-1.5 sm:gap-2 w-full h-full min-h-0"
-                style={{ display: 'flex', flexDirection: 'row', height: '100%' }}
+                className="flex gap-1.5 sm:gap-2 w-full h-full min-h-0"
+                style={{ display: 'flex', flexDirection: 'row', height: '100%', alignItems: 'stretch' }}
               >
                 {/* P2 Side Deck on Left (Rotates to P2's Right Hand side!) */}
                 {renderTabletopSideDeck(p2)}
                 {/* P2 Board on Right (Rotates to P2's Left Hand side!) */}
                 <div
-                  className="h-full flex items-center justify-center"
+                  className="h-full flex items-center justify-center min-w-0"
                   style={{ flex: '0 0 auto', height: '100%', maxWidth: '58vw' }}
                 >
                   <Playfield compact player={p2} isOpponent viewMode="tabletop_duel" />
@@ -541,8 +555,8 @@ export function App() {
 
             {/* --- CENTER CLASH DIVIDER & SYNCHRO INFORMATION HUB --- */}
             <div
-              className="relative w-full flex items-center justify-between px-2 my-0.5 shrink-0 z-30 h-8 sm:h-9"
-              style={{ flex: '0 0 auto' }}
+              className="relative w-full flex items-center justify-between px-2 my-0.5 shrink-0 h-8 sm:h-9"
+              style={{ flex: '0 0 auto', zIndex: 10 }}
             >
               {/* Left Plasma Laser */}
               <div className="flex-1 h-1.5 bg-gradient-to-r from-pink-500 to-cyan-400 rounded-full shadow-[0_0_8px_#00f3ff]" />
@@ -596,15 +610,15 @@ export function App() {
             {/* --- BOTTOM HALF: PLAYER 1 (Facing Player 1) --- */}
             <div
               className="flex items-center justify-center py-0.5"
-              style={{ flex: '1 1 0%', minHeight: 0, display: 'flex', width: '100%' }}
+              style={{ flex: '1 1 0', minHeight: 0, height: '100%', width: '100%' }}
             >
               <div
-                className="flex items-center justify-between gap-1.5 sm:gap-2 w-full h-full min-h-0"
-                style={{ display: 'flex', flexDirection: 'row', height: '100%' }}
+                className="flex gap-1.5 sm:gap-2 w-full h-full min-h-0"
+                style={{ display: 'flex', flexDirection: 'row', height: '100%', alignItems: 'stretch' }}
               >
                 {/* P1 Board on Left */}
                 <div
-                  className="h-full flex items-center justify-center"
+                  className="h-full flex items-center justify-center min-w-0"
                   style={{ flex: '0 0 auto', height: '100%', maxWidth: '58vw' }}
                 >
                   <Playfield compact player={p1} viewMode="tabletop_duel" />

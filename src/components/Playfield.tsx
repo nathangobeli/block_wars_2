@@ -119,9 +119,13 @@ export const Playfield: React.FC<PlayfieldProps> = ({
   return (
     <div
       className={`relative flex flex-col items-center justify-center transition-transform duration-300 ${
-        isTabletop ? 'h-full min-h-0' : ''
+        isTabletop ? 'min-h-0' : ''
       } ${isP2Tabletop ? 'rotate-180' : ''}`}
-      style={isTabletop ? { flex: '0 0 auto', height: '100%', maxWidth: '58vw', minHeight: 0 } : undefined}
+      style={
+        isTabletop
+          ? { flex: '1 1 0', height: '100%', width: '100%', minHeight: 0, overflow: 'hidden' }
+          : undefined
+      }
     >
       {/* Player Header Banner */}
       <div className={`shrink-0 flex items-center justify-between w-full px-1.5 ${isTabletop ? 'py-0.5 mb-0.5 text-[10px]' : 'py-1 mb-1 text-xs'} font-mono`}>
@@ -166,8 +170,9 @@ export const Playfield: React.FC<PlayfieldProps> = ({
       </div>
 
       {/* Main Grid Wrapper with Threat Meter */}
+      {/* Outer wrapper fills available space; inner wrapper constrains to aspect ratio */}
       <div
-        className={`relative ${boardHeightClass} ${isTabletop ? 'flex-1 min-h-0' : ''}`}
+        className={`relative ${isTabletop ? 'flex-1 min-h-0' : boardHeightClass}`}
         style={
           isTabletop
             ? {
@@ -181,6 +186,19 @@ export const Playfield: React.FC<PlayfieldProps> = ({
             : undefined
         }
       >
+        {/* Aspect-ratio constrained inner centering shell */}
+        <div
+          style={isTabletop ? {
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'stretch',
+            height: '100%',
+            width: 'auto',
+            maxWidth: '100%',
+            // Accounts for the threat meter column width alongside the board
+            aspectRatio: '11 / 20',
+          } : { display: 'flex', flexDirection: 'row', alignItems: 'stretch', height: '100%' }}
+        >
         {/* Threat Meter: Glowing Garbage Preview Column */}
         <div className={`relative ${isTabletop ? 'w-2' : 'w-2.5 sm:w-3'} h-full bg-slate-950/80 rounded-l border-y border-l border-slate-800 mr-0.5 overflow-hidden flex flex-col-reverse p-[1px]`}>
           {Array.from({ length: 20 }, (_, idx) => (
@@ -206,7 +224,6 @@ export const Playfield: React.FC<PlayfieldProps> = ({
             width: 'auto',
             maxWidth: '100%',
             aspectRatio: '10 / 20',
-            objectFit: 'contain',
             display: 'grid',
             gridTemplateRows: `repeat(${GRID_HEIGHT}, minmax(0, 1fr))`,
             gridTemplateColumns: `repeat(${GRID_WIDTH}, minmax(0, 1fr))`,
@@ -392,6 +409,7 @@ export const Playfield: React.FC<PlayfieldProps> = ({
             </div>
           )}
         </div>
+        </div>{/* end aspect-ratio shell */}
       </div>
     </div>
   );
